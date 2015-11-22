@@ -1,0 +1,7 @@
+{
+  "name": "mi11er/mi11er-utils",
+  "type": "wordpress-plugin",
+  "require": {
+    "composer/installers": "*"
+  }
+}
