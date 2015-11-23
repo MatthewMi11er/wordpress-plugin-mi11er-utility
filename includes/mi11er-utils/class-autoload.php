@@ -1,13 +1,14 @@
 <?php
 /**
  * Autoloader
+ *
  * @package mi11er_utils
  */
 
 namespace Mi11er\Utils;
 
 /**
- * Autoloader for OFBF Classes
+ * Autoloader for mi11er-utils Classes
  */
 class Autoloader
 {
