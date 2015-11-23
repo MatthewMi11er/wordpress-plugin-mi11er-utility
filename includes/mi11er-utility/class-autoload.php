@@ -2,13 +2,13 @@
 /**
  * Autoloader
  *
- * @package mi11er_utils
+ * @package Mi11er\Utility
  */
 
-namespace Mi11er\Utils;
+namespace Mi11er\Utility;
 
 /**
- * Autoloader for mi11er-utils Classes
+ * Autoloader for Mi11er\Utility Classes
  */
 class Autoloader
 {
