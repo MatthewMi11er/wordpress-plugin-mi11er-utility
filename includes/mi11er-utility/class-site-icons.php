@@ -78,14 +78,14 @@ class Site_Icons
 			echo esc_attr( $prefix . '=' . $value );
 		}
 	}
-	
+
 	/**
 	 * Overrides the site_icon option setting to prevent built in wp-site-icon from interfearing with this plugin.
 	 * TODO: add fliter to allow override.
 	 * @param mixed $value Value of the option.
 	 * @return int 0
 	 */
-	public static function option_site_icon_filter( $value ){
+	public static function option_site_icon_filter( $value ) {
 		return 0;
 	}
 

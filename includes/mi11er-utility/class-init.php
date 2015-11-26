@@ -48,7 +48,7 @@ class Init
 	 * Register All the primary action hooks.
 	 */
 	public function register_filters() {
-		add_action( 'wp_head',            __NAMESPACE__ . '\Icons::the_icon_links' );	
+		add_action( 'wp_head',            __NAMESPACE__ . '\Icons::the_icon_links' );
 		add_action( 'customize_register', __NAMESPACE__ . '\Icons::customize_the_customizer', 11 );
 
 		return $this;
