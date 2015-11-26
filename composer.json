@@ -1,5 +1,5 @@
 {
-  "name": "mi11er/mi11er-utils",
+  "name": "mi11er/mi11er-utility",
   "type": "wordpress-plugin",
   "require": {
     "composer/installers": "*"

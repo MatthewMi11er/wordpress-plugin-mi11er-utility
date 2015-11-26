@@ -39,6 +39,8 @@ class Init
 	 * Register All the primary filter hooks.
 	 */
 	public function register_filters() {
+		add_filter( 'option_site_icon', __NAMESPACE__ . '\Site_Icons::option_site_icon_filter' );
+
 		return $this;
 	}
 
@@ -46,7 +48,8 @@ class Init
 	 * Register All the primary action hooks.
 	 */
 	public function register_filters() {
-		add_action( 'wp_head', array( $this, __NAMESPACE__ . '\Favicons::the_favicon_links' ) );
+		add_action( 'wp_head',            __NAMESPACE__ . '\Icons::the_icon_links' );	
+		add_action( 'customize_register', __NAMESPACE__ . '\Icons::customize_the_customizer', 11 );
 
 		return $this;
 	}
