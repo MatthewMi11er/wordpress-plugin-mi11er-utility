@@ -32,8 +32,8 @@ final class Mu
 	 * Register All the primary hooks for the puglin
 	 */
 	public function register_hooks() {
-		$this->_actions->register_hooks();
-		$this->_filters->register_hooks();
+		//$this->_actions->register_hooks();
+		//$this->_filters->register_hooks();
 	}
 
 	/**
