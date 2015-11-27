@@ -94,33 +94,32 @@ class Site_Icons
 	 *
 	 * @param WP_Customize_Manager $wp_customize Customizer object.
 	 */
-	function customize_the_customizer( $wp_customize ) {
+	public static function customize_register( $wp_customize ) {
 		$wp_customize->remove_control( 'site_icon' );
 	}
-	
+
 	/**
-	 * TODO: Route to my images
-	 * http://wordpress.stackexchange.com/a/157441
+	 * Skip wordpress routing and do our own for certin requests
+	 * Eg. http://wordpress.stackexchange.com/a/157441
+	 * Must run on 'do_parse_request' filter hook.
+	 *
+	 * @param bool         $continue             Whether or not to parse the request. Default true.
+	 * @param WP           $instance             Current WordPress environment instance.
+	 * @param array|string $extra_query_vars     Extra passed query variables.
+	 *
+	 * @return bool
 	 */
-  /**
-    * Run a filter to obtain some custom url settings, compare them to the current url
-    * and if a match is found the custom callback is fired, the custom view is loaded
-    * and request is stopped.
-    * Must run on 'do_parse_request' filter hook.
-    */
-   public function parse( $result ) {
-     if ( current_filter() !== 'do_parse_request' ) {
-       return $result;
-     }
-		 
-		 if(PHP_URL_PATH === 'test123'){
-			 echo 'i did it.';
-			 exit();
-		 }
-    /* $custom_urls = (array) apply_filters( 'my_custom_urls', array() );
-     if ( $this->match( $custom_urls ) && $this->run() ) {
-       exit(); // stop WordPress workflow
-     }*/
-     return $result;
-   }
+	public static function do_parse_request_filter( $continue, $instance, $extra_query_vars ) {
+		// Only run inside the do_parse_request_filter.
+		if ( 'do_parse_request' !== current_filter() ) {
+			return $continue;
+		}
+
+		$request_path = untrailingslashit( parse_url( add_query_arg( array() ), PHP_URL_PATH ) );
+		if ( '/test123' === $request_path ) {
+			echo 'i did it.';
+			exit();
+		}
+		return $continue;
+	}
 }

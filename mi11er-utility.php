@@ -14,11 +14,32 @@
 namespace Mi11er\Utility;
 
 // In case someone integrates this plugin in a theme or calling this directly.
-if ( class_exists( 'Mi11er\Utility\Init' ) || ! defined( 'ABSPATH' ) ) {
+if ( class_exists( __NAMESPACE__.'\Mu' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-// Initialize the plugin.
-require_once __DIR__ . DIRECTORY_SEPERATOR . 'includes' . DIRECTORY_SEPERATOR . 'mi11er-utility' . DIRECTORY_SEPERATOR . 'class-autoloader.php';
-$mi11er_utility = new Init();
+// Initialize the plugin Autoloader.
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'mi11er-utility' . DIRECTORY_SEPARATOR . 'class-autoloader.php';
 
+/**
+ * Initalize the pluging and return a reference.
+ *
+ * Am I a Singlton?
+ * Am I a registry?
+ * Am I the best practice?
+ * I don't know. I am what I am.
+ *
+ * @return Mi11er\Utility\Mu
+ */
+function mu() {
+	static $mi11er_utility = null;
+
+	if ( is_null( $mi11er_utility ) ) {
+		$mi11er_utility = new Mu();
+		$mi11er_utility->init();
+	}
+	return $mi11er_utility;
+}
+
+// This seems like a good time to kick things off.
+mu();
