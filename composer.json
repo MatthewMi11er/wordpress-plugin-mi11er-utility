@@ -5,7 +5,9 @@
     "composer/installers":"*"
   },
 	"require-dev":{
+		"phing/phing": "dev-master",
 		"phpunit/phpunit":"~4.8",
+		"sebastian/phpcpd": "*",
 		"wp-cli/wp-cli":"*"
 	}
 }
