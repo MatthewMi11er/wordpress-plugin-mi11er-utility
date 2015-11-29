@@ -18,6 +18,9 @@ if ( class_exists( __NAMESPACE__.'\Mu' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
+// Initialize the composer autoloader.
+is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) && require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
 // Initialize the plugin Autoloader.
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'mi11er-utility' . DIRECTORY_SEPARATOR . 'class-autoloader.php';
 

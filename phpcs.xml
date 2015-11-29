@@ -3,6 +3,8 @@
   <description>The coding standard for my wordpress plugins and themes. Based on the WordPress-Coding-Standards</description>
   
   <file>./</file>
+  <exclude-pattern>.build/*</exclude-pattern>
+  <exclude-pattern>vendor/*</exclude-pattern>
   
   <rule ref="WordPress" /> 
   <rule ref="Generic.NamingConventions.UpperCaseConstantName" />

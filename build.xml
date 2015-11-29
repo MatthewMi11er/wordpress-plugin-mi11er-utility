@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- http://www.phing.info/docs/stable/hlhtml/index.html -->
+<project name="Mi11er Utility Wordpress Plugin" default="build" basedir=".">
+  <!--=================Properties=================-->
+  <property name="composer.bin.dir" value="${project.basedir}/vendor/bin" />
+  
+  <property name="mysql.exec" value="mysql" />
+  <property name="mysql.host" value="localhost" />
+  <property name="mysql.user" value="root" />
+  <property name="mysql.db" value="wordpress_tests" />
+
+  <property name="phpunit.exec" value="${composer.bin.dir}/phpunit" />
+
+  <property name="project.tests.dir" value="${project.basedir}/tests" />
+  <property name="project.build.dir" value="${project.basedir}/.build" />
+  
+  <property name="svn.exec" value="svn" />
+
+  <property name="wp.dir" value="${project.build.dir}/wordpress" />
+  <property name="wp.content.dir" value="${wp.dir}/wp-content" />
+  <property name="wp.tests.dir" value="${project.build.dir}/wordpress-tests" />
+  <property name="wp.tests.repo" value="http://develop.svn.wordpress.org/trunk" />
+  <property name="wp.plugins.dir" value="${wp.content.dir}/plugins" />
+  <property name="wp.plugins.importer.dir" value="${wp.plugins.dir}/wordpress-importer" />
+  <property name="wp.plugins.importer.repo" value="https://plugins.svn.wordpress.org/wordpress-importer/trunk" />
+
+  <property name="wpcli.exec" value="${composer.bin.dir}/wp" />
+
+  <!--=================Targets=================-->
+  <target name="build" depends="inspect,tests" description="Primary target used to invoke all the targets."/>
+  <target name="hello" description="Hello World!">
+    <echo msg="Hello World!"/>
+  </target>
+  <target name="inspect" description="LINT ALL THE THINGS!" depends="lint" />
+  <target name="resolve-paths" depends="load-properties" description="Figure out our absolute paths.">
+    <resolvepath propertyName="project.basedir.resolved" file="${project.basedir}" />
+    <resolvepath propertyName="project.test.dir.resolved" file="${project.test.dir}" />
+    <resolvepath propertyName="wp.dir.resolved" file="${wp.dir}" />
+    <resolvepath propertyName="wp.content.dir.resolved" file="${wp.content.dir}" />
+    <resolvepath propertyName="wp.tests.dir.resolved" file="${wp.tests.dir}" />
+    <resolvepath propertyName="wp.plugins.importer.dir.resolved" file="${wp.plugins.importer.dir}" />
+
+    <echo msg="OK! project.basedir.resolved: ${project.basedir.resolved}" />
+    <echo msg="OK! project.tests.dir.resolved: ${project.tests.dir.resolved}" />
+    <echo msg="OK! wp.dir.resolved: ${wp.dir.resolved}" />
+    <echo msg="OK! wp.content.dir.resolved : ${wp.content.dir.resolved}" />
+    <echo msg="OK! wp.tests.dir.resolved: ${wp.tests.dir.resolved}" />
+    <echo msg="OK! wp.plugins.importer.dir.resolved: ${wp.plugins.importer.dir.resolved}" />
+  </target>
+  
+  <target name="lint" depends="resolve-paths,lint-php" description="Check the project for syntax errors." />
+  
+  <target name="lint-php">
+      <foreach param="filename" absparam="absfilename" target="lint-php-file">
+          <fileset refid="project.php.files" />
+      </foreach>
+  </target>
+
+  <target name="lint-php-file">
+      <phplint file="${absfilename}"
+               haltonfailure="true"
+               deprecatedAsError="true"
+               cachefile="${phplint.cachefile}" />
+  </target>
+
+  <target name="load-properties" description="Override default properties if custom build.properties exists">
+    <available file="${project.basedir}/build.properties" property="project.properties.file" value="${project.basedir}/build.properties" />
+    <if>
+      <isset property="project.properties.file" />
+      <then>
+        <property file="${project.basedir}/build.properties" override="true" />
+        <echo msg="Build properties loaded!" />
+      </then>
+    </if>
+  </target>
+
+  <target name="phpunit" depends="prepare" description="Run the PHPUnit test suite">
+    <exec executable="${phpunit.exec}" passthru="true" checkreturn="true" />
+  </target>
+
+  <target name="wp-tests-config-prepare" depends="wp-tests-download">
+    <if>
+      <not>
+        <available file="${wp.dir.resolved}/wp-config.php" />
+      </not>
+      <then>
+        <exec executable="${wpcli.exec}" passthru="true" checkreturn="true">
+          <arg value="core" />
+          <arg value="config" />
+          <arg value="--dbname=${mysql.db}" />
+          <arg value="--dbuser=${mysql.user}" />
+          <arg value="--path=${wp.dir}" />
+          <arg value="--allow-root" />
+        </exec>
+        <echo msg="OK! Updated wp-config.php" />
+      </then>
+      <else>
+        <echo msg="Skipping: wp-config.php already exists" />
+      </else>
+    </if>
+    
+    <if>
+      <not>
+        <available file="${wp.tests.dir.resolved}/wp-tests-config.php" />
+      </not>
+      <then>
+        <copy file="${wp.tests.dir.resolved}/wp-tests-config-sample.php" tofile="${wp.tests.dir.resolved}/wp-tests-config.php" overwrite="false">
+          <filterchain>
+             <replaceregexp>
+                 <regexp pattern="youremptytestdbnamehere" replace="${mysql.db}" ignoreCase="true" />
+                 <regexp pattern="yourusernamehere" replace="${mysql.user}" ignoreCase="true" />
+                 <regexp pattern="yourpasswordhere" replace="" ignoreCase="true" />
+                 <regexp pattern="localhost" replace="${mysql.host}" ignoreCase="true" />
+                 <regexp pattern="^.*ABSPATH.*$" replace="define( 'ABSPATH', '${wp.dir.resolved}' );" ignoreCase="true" />
+             </replaceregexp>
+         </filterchain>
+       </copy>
+       <echo msg="OK! Updated wp-tests-config.php" />
+     </then>
+     <else>
+       <echo msg="Skipping: wp-tests-config.php already exists" />
+     </else>
+   </if>
+  </target>
+
+  <target name="wp-tests-download" depends="resolve-paths">
+    <if>
+      <not>
+        <available file="${wp.tests.dir.resolved}" />
+      </not>
+      <then>
+        <mkdir dir="${wp.testsdir.resolved}" />
+        <echo msg="Downloading the WordPress tests framework and extracting it into ${wp.tests.dir.resolved}" />
+        <exec command="${svn.exec} co --quiet --ignore-externals ${wp.tests.repo} ${wp.tests.dir.resolved}" passthru="true" checkreturn="true" />
+      </then>
+      <else>
+        <echo msg="Skipping WordPress tests framework download. Using existing install tests directory in ${wp.tests.dir.resolved}" />
+      </else>
+    </if>
+    <if>
+      <not>
+        <available file="${wp.plugins.importer.dir.resolved}" />
+      </not>
+      <then>
+        <mkdir dir="${wp.plugins.importer.dir.resolved}" />
+        <echo msg="Downloading WordPress Importer plugin into test framework" />
+        <exec command="${svn.exec} checkout --non-interactive --trust-server-cert ${wp.plugins.importer.repo} ${wp.plugins.importer.dir.resolved}" checkreturn="true" />
+        </then>
+        <else>
+          <echo msg="Skipped WordPress Importer download. Already exists in directory." />
+        </else>
+      </if>
+  </target>
+  
+  <target name="prepare" depends="resolve-paths,wp-tests-db-prepare,wp-tests-config-prepare" description="Prepare and configures the environment." />
+  <target name="tests" description="TEST ALL THE THINGS!" depends="phpunit" />
+  <target name="wp-tests-db-prepare" depends="resolve-paths">
+    <exec executable="${mysql.exec}" passthru="true" checkreturn="true" escape="false">
+      <arg value="--user=${mysql.user}" />
+      <arg value="--execute=DROP DATABASE IF EXISTS ${mysql.db};" />
+    </exec>
+
+    <exec executable="${mysql.exec}" passthru="true" checkreturn="true" escape="false">
+      <arg value="--user=${mysql.user}" />
+      <arg value="--execute=CREATE DATABASE ${mysql.db};" />
+    </exec>
+
+    <echo msg="OK! MySQL database created: ${mysql.db}" />
+  </target>
+  
+  <fileset id="project.php.files" dir="${project.basedir}">
+      <include name="./**.php" />
+      <include name="./includes/**.php" />
+  </fileset>
+
+</project>

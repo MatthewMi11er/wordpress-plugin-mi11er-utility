@@ -1,15 +1,19 @@
 <?php
+/**
+ * PHPUnit Bootstrap file.
+ * @package mi11er-utility/tests
+ */
 
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
-if ( ! $_tests_dir ) {
-	$_tests_dir = '/tmp/wordpress-tests-lib';
-}
+	$_tests_dir = dirname( __DIR__ ) . DIRECTORY_SEPARATOR . '.build' . DIRECTORY_SEPARATOR . 'wordpress-tests' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'phpunit' . DIRECTORY_SEPARATOR . 'includes';
 
-require_once $_tests_dir . '/includes/functions.php';
+require_once $_tests_dir . DIRECTORY_SEPARATOR . 'functions.php';
 
+/**
+ * Load the plugin here since it's not in the normal directory.
+ */
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/mi11er-utility.php';
+	require dirname( __DIR__ )  . DIRECTORY_SEPARATOR . 'mi11er-utility.php';
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
-require $_tests_dir . '/includes/bootstrap.php';
+require $_tests_dir . DIRECTORY_SEPARATOR . 'bootstrap.php';
