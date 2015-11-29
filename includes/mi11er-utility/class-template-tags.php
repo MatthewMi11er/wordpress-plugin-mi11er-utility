@@ -24,7 +24,7 @@ class Template_Tags
 	public static function the_home_url( $path = '', $scheme = null ) {
 		echo esc_url( home_url( $path, $scheme ) );
 	}
-	
+
 	/**
 	 * Echo The favicon links.
 	 */

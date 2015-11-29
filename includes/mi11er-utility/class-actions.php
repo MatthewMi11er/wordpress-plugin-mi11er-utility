@@ -7,4 +7,6 @@
 
 namespace Mi11er\Utility;
 
-final class Actions{}
+final class Actions
+{
+}

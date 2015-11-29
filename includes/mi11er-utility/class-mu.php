@@ -13,11 +13,11 @@ namespace Mi11er\Utility;
 final class Mu
 {
 	protected $_actions;
-	
+
 	protected $_filters;
-	
-	
-	public function __construct(){
+
+
+	public function __construct() {
 		$this->_actions = new Actions();
 		$this->_filters = new Filters();
 	}
@@ -32,8 +32,8 @@ final class Mu
 	 * Register All the primary hooks for the puglin
 	 */
 	public function register_hooks() {
-		//$this->_actions->register_hooks();
-		//$this->_filters->register_hooks();
+		// $this->_actions->register_hooks();
+		// $this->_filters->register_hooks();
 	}
 
 	/**
