@@ -1,4 +1,5 @@
 <?php
+use Mi11er\Utility as MU;
 
 class UnitTest extends PHPUnit_Framework_TestCase
 {
@@ -12,6 +13,7 @@ class UnitTest extends PHPUnit_Framework_TestCase
 		$plugin = 'mi11er-utility';
 		$this->assertFalse( is_plugin_active( $plugin ) );
 
+		$this->assertInstanceOf('Mi11er\Utility\Mu', Mu\mu() );
 		$current = get_option( 'active_plugins' );
 		$current[] = $plugin;
 
@@ -21,5 +23,9 @@ class UnitTest extends PHPUnit_Framework_TestCase
 		do_action( 'activated_plugin',  $plugin );
 
 		$this->assertTrue( is_plugin_active( $plugin ) );
+	}
+	
+	public function test_mu_function_returns_plugin_option(){
+		$this->assertInstanceOf('Mi11er\Utility\Mu', Mu\mu() );
 	}
 }
