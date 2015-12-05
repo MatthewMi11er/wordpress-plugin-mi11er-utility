@@ -16,15 +16,13 @@
   
   <property name="svn.exec" value="svn" />
 
-  <property name="wp.dir" value="${project.build.dir}/wordpress" />
+  <property name="wp.dir" value="${wp.tests.dir}/src" />
   <property name="wp.content.dir" value="${wp.dir}/wp-content" />
   <property name="wp.tests.dir" value="${project.build.dir}/wordpress-tests" />
-  <property name="wp.tests.repo" value="http://develop.svn.wordpress.org/trunk" />
+  <property name="wp.tests.repo" value="http://develop.svn.wordpress.org/branches/4.3" />
   <property name="wp.plugins.dir" value="${wp.content.dir}/plugins" />
   <property name="wp.plugins.importer.dir" value="${wp.plugins.dir}/wordpress-importer" />
   <property name="wp.plugins.importer.repo" value="https://plugins.svn.wordpress.org/wordpress-importer/trunk" />
-
-  <property name="wpcli.exec" value="${composer.bin.dir}/wp" />
 
   <!--=================Targets=================-->
   <target name="build" depends="inspect,tests" description="Primary target used to invoke all the targets."/>
@@ -81,26 +79,6 @@
   <target name="wp-tests-config-prepare" depends="wp-tests-download">
     <if>
       <not>
-        <available file="${wp.dir.resolved}/wp-config.php" />
-      </not>
-      <then>
-        <exec executable="${wpcli.exec}" passthru="true" checkreturn="true">
-          <arg value="core" />
-          <arg value="config" />
-          <arg value="--dbname=${mysql.db}" />
-          <arg value="--dbuser=${mysql.user}" />
-          <arg value="--path=${wp.dir}" />
-          <arg value="--allow-root" />
-        </exec>
-        <echo msg="OK! Updated wp-config.php" />
-      </then>
-      <else>
-        <echo msg="Skipping: wp-config.php already exists" />
-      </else>
-    </if>
-    
-    <if>
-      <not>
         <available file="${wp.tests.dir.resolved}/wp-tests-config.php" />
       </not>
       <then>
@@ -111,7 +89,6 @@
                  <regexp pattern="yourusernamehere" replace="${mysql.user}" ignoreCase="true" />
                  <regexp pattern="yourpasswordhere" replace="" ignoreCase="true" />
                  <regexp pattern="localhost" replace="${mysql.host}" ignoreCase="true" />
-                 <regexp pattern="^.*ABSPATH.*$" replace="define( 'ABSPATH', '${wp.dir.resolved}' );" ignoreCase="true" />
              </replaceregexp>
          </filterchain>
        </copy>
@@ -124,35 +101,18 @@
   </target>
 
   <target name="wp-tests-download" depends="resolve-paths">
-    <if>
-      <not>
-        <available file="${wp.tests.dir.resolved}" />
-      </not>
-      <then>
-        <mkdir dir="${wp.testsdir.resolved}" />
+        <mkdir dir="${wp.tests.dir.resolved}" />
         <echo msg="Downloading the WordPress tests framework and extracting it into ${wp.tests.dir.resolved}" />
         <exec command="${svn.exec} co --quiet --ignore-externals ${wp.tests.repo} ${wp.tests.dir.resolved}" passthru="true" checkreturn="true" />
-      </then>
-      <else>
-        <echo msg="Skipping WordPress tests framework download. Using existing install tests directory in ${wp.tests.dir.resolved}" />
-      </else>
-    </if>
-    <if>
-      <not>
-        <available file="${wp.plugins.importer.dir.resolved}" />
-      </not>
-      <then>
+        
         <mkdir dir="${wp.plugins.importer.dir.resolved}" />
         <echo msg="Downloading WordPress Importer plugin into test framework" />
         <exec command="${svn.exec} checkout --non-interactive --trust-server-cert ${wp.plugins.importer.repo} ${wp.plugins.importer.dir.resolved}" checkreturn="true" />
-        </then>
-        <else>
-          <echo msg="Skipped WordPress Importer download. Already exists in directory." />
-        </else>
-      </if>
   </target>
   
-  <target name="prepare" depends="resolve-paths,wp-tests-db-prepare,wp-tests-config-prepare" description="Prepare and configures the environment." />
+  <target name="prepare" depends="resolve-paths,wp-tests-db-prepare,wp-tests-config-prepare" description="Prepare and configures the environment." >
+    <symlink target="${project.basedir.resolved}" link="${wp.plugins.dir}/mi11er-utility" />
+  </target>
   <target name="tests" description="TEST ALL THE THINGS!" depends="phpunit" />
   <target name="wp-tests-db-prepare" depends="resolve-paths">
     <exec executable="${mysql.exec}" passthru="true" checkreturn="true" escape="false">

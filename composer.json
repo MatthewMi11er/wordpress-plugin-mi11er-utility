@@ -12,7 +12,6 @@
   },
 	"require-dev":{
 		"php": ">=5.4",
-		"johnpbloch/wordpress": "~4.3",
 		"whatthejeff/fab-phpunit-resultprinter": "~1.1",
 		"phing/phing": "dev-master",
 		"phpunit/dbunit": "*",
@@ -20,8 +19,5 @@
 		"phpunit/phpunit-selenium" : "*",
 		"sebastian/phpcpd": "*",
 		"wp-cli/wp-cli":"*"
-	},
-	"extra": {
-		"wordpress-install-dir": ".build/wordpress"
 	}
 }

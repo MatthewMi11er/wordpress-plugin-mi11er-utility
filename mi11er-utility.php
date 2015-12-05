@@ -14,9 +14,7 @@
 namespace Mi11er\Utility;
 
 // In case someone integrates this plugin in a theme or calling this directly.
-if ( class_exists( __NAMESPACE__.'\Mu' ) || ! defined( 'ABSPATH' ) ) {
-	return;
-}
+defined( 'ABSPATH' ) || ! class_exists( __NAMESPACE__.'\Mu' ) || return;
 
 // Initialize the composer autoloader.
 is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) && require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
@@ -32,6 +30,7 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 
  * Am I the best practice?
  * I don't know. I am what I am.
  *
+ * @param bool $reset Force reinitalization of the static value.
  * @return Mi11er\Utility\Mu
  */
 function mu() {
