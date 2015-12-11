@@ -4,9 +4,13 @@
   
   <file>./</file>
   <exclude-pattern>.build/*</exclude-pattern>
+  <exclude-pattern>.git/*</exclude-pattern>
   <exclude-pattern>vendor/*</exclude-pattern>
   
   <rule ref="WordPress" /> 
   <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
   <rule ref='PEAR.Classes.ClassDeclaration.OpenBraceNewLine' />
+  <rule ref='Squiz.Commenting.FunctionComment.Missing'>
+    <exclude-pattern>tests/*</exclude-pattern>
+  </rule>
 </ruleset>

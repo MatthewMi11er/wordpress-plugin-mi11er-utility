@@ -6,6 +6,8 @@
 
 namespace Mi11er\Utility\Tests;
 
+defined( 'PHPUNIT_COMPOSER_INSTALL' ) || exit;
+
 /**
  * Relative Path to the pugin file.
  */
@@ -24,7 +26,7 @@ const PLUGIN_IDENTIFIER = 'mi11er-utility/mi11er-utility.php';
 /**
  * Activates the plugin
  */
-function activate_plugin(){
+function activate_plugin() {
 	if ( ! is_plugin_active( PLUGIN_IDENTIFIER ) ) {
 		\activate_plugin( PLUGIN_IDENTIFIER, '', false, false );
 	}
@@ -33,7 +35,7 @@ function activate_plugin(){
 /**
  * Deactivates the plugin
  */
-function deactivate_plugin(){
+function deactivate_plugin() {
 	if ( is_plugin_active( PLUGIN_IDENTIFIER ) ) {
 		deactivate_plugins( PLUGIN_IDENTIFIER );
 	}
