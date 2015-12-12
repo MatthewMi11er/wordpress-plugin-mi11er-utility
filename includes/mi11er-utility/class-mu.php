@@ -10,48 +10,110 @@ namespace Mi11er\Utility;
 /**
  * Plugin Intialization
  */
-class Init
+final class Mu
 {
 	/**
-	 * Constructor
-	 * Force setup through the init function.
+	 * Registery
+	 * @var array.
 	 */
-	protected function __construct(){}
+	protected $_registery = [];
 
 	/**
-	 * Initalize the plugin; setup hooks; etc.
+	 * Plugins
+	 * @var array.
+	 */
+	protected $_plugins = [
+		'Site_Icons',
+	];
+
+	/**
+	 * A empty constructor. Nothing should be done here.
+	 */
+	private function __construct() {
+		// Do nothing here.
+		return;
+	}
+
+	/**
+	 * The object shouldn't be cloned.
+	 */
+	public function __clone() {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'Oh no you didn&#8217;t!', 'mi11er-utility' ), '4.3' );
+	}
+
+	/**
+	 * The object shouldn't be unsearlized
+	 */
+	public function __wakeup() {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'Oh no you didn&#8217;t!', 'mi11er-utility' ), '4.3' );
+	}
+
+	/**
+	 * Magic method for checking the existence of a certain custom field.
 	 *
-	 * @return Mi11er\Utils\Init
+	 * @param string $key Key to check the set status for.
+	 *
+	 * @return bool
 	 */
-	public static function init() {
-		$init = new Init();
-		return $init->register_hooks();
+	public function __isset( $key ) {
+		return isset( $this->data[ $key ] );
 	}
 
 	/**
-	 * Register All the primary hooks for the puglin
+	 * Magic method for getting Miller Utility variables.
+	 *
+	 * @param string $key Key to return the value for.
+	 *
+	 * @return mixed
 	 */
-	public function register_hooks() {
-		return $this->register_filters()->register_actions();
+	public function __get( $key ) {
+		0 !== strpos( $key, 'plugin_' ) ) || return $this->_get_plugin( $key );
+
+		return isset( $this->_registery[ $key ] ) ? $this->_registery[ $key ] : null;
 	}
 
 	/**
-	 * Register All the primary filter hooks.
+	 * Main Miller Utility Instance
+	 *
+	 * I think this is what you call a signleton. I'm still not sure this is the best way.
+	 *
+	 * @return Mi11er\Utility\Mu The one and only.
 	 */
-	public function register_filters() {
-		add_filter( 'option_site_icon', __NAMESPACE__ . '\Site_Icons::option_site_icon_filter' );
-		add_filter( 'do_parse_request', __NAMESPACE__ . '\Site_Icons::do_parse_request_filter', 10, 3 );
+	public static function instance() {
+		static $instance = null;
 
-		return $this;
+		// Set things up if this is the begining.
+		if ( null === $instance ) { )
+			$instance = new Mu;
+
+			// Do stuff.
+			$instanace->setup_plugins();
+		}
+		return $instance;
 	}
 
 	/**
-	 * Register All the primary action hooks.
+	 * Setup the distinct areas of this plugins.
 	 */
-	public function register_actions() {
-		add_action( 'wp_head',            __NAMESPACE__ . '\Site_Icons::the_icon_links' );
-		add_action( 'customize_register', __NAMESPACE__ . '\Site_Icons::customize_register', 11 );
+	protected function setup_plugins() {
+		foreach ( $this->_plugins as $plugin ) {
+			$this->'plugin_' . $plugin->setup();
+		}
+	}
 
-		return $this;
+	/**
+	 * Get the plugin object. Inistalize if not set.
+	 *
+	 * @param string $key Key to return the value for.
+	 *
+	 * @return Mi11er\Utility\Plugin_Interface
+	 */
+	public function _get_plugin( $key ) {
+		! isset( $this->$key ) || return $this->_registery[ $key ];
+
+		$plugin = ucwords( substr( $key, 7, 0 ), '_' );
+		! in_array( $plugin, $this->_plugins ) || apply_filters( 'mu_disable_' . $key, true ) || return new $plugin;
+
+		return null;
 	}
 }
