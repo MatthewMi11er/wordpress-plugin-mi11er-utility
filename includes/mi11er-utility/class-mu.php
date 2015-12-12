@@ -67,7 +67,9 @@ final class Mu
 	 * @return mixed
 	 */
 	public function __get( $key ) {
-		0 !== strpos( $key, 'plugin_' ) ) || return $this->_get_plugin( $key );
+		if ( 0 === strpos( $key, 'plugin_' ) ) {
+			return $this->_get_plugin( $key );
+		}
 
 		return isset( $this->_registery[ $key ] ) ? $this->_registery[ $key ] : null;
 	}
@@ -83,11 +85,11 @@ final class Mu
 		static $instance = null;
 
 		// Set things up if this is the begining.
-		if ( null === $instance ) { )
-			$instance = new Mu;
+		if ( null === $instance ) {
+			$instance = new Mu();
 
 			// Do stuff.
-			$instanace->setup_plugins();
+			$instance->setup_plugins();
 		}
 		return $instance;
 	}
@@ -96,9 +98,13 @@ final class Mu
 	 * Setup the distinct areas of this plugins.
 	 */
 	protected function setup_plugins() {
-		foreach ( $this->_plugins as $plugin ) {
-			$this->'plugin_' . $plugin->setup();
+		foreach ( $this->_plugins as $plugin_name ) {
+			$plugin_name = strtolower( 'plugin_' . $plugin_name );
+			if ( apply_filters( 'mu_enable_' . $plugin_name, true ) ) {
+				$this->$plugin_name->setup();
+			}
 		}
+		die( 'a' );
 	}
 
 	/**
@@ -109,10 +115,15 @@ final class Mu
 	 * @return Mi11er\Utility\Plugin_Interface
 	 */
 	public function _get_plugin( $key ) {
-		! isset( $this->$key ) || return $this->_registery[ $key ];
+		if ( isset( $this->$key ) ) {
+			return $this->_registery[ $key ];
+		}
 
-		$plugin = ucwords( substr( $key, 7, 0 ), '_' );
-		! in_array( $plugin, $this->_plugins ) || apply_filters( 'mu_disable_' . $key, true ) || return new $plugin;
+		$plugin = ucwords( substr( $key, 7 ), '_' );
+		if ( in_array( $plugin, $this->_plugins ) && apply_filters( 'mu_enable_' . $plugin, true ) ) {
+			$plugin_class = __NAMESPACE__ . '\\' . $plugin;
+			return new $plugin_class;
+		}
 
 		return null;
 	}

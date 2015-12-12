@@ -13,10 +13,14 @@
  */
 
 // In case someone integrates this plugin in a theme or calling this directly.
-defined( 'ABSPATH' ) || ! function_exists( 'mu' ) || return;
+if ( ! defined( 'ABSPATH' ) || class_exists( 'Mi11er\Utility\Mu' ) ) {
+	return;
+}
 
 // Initialize the composer autoloader.
-is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) && require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+if ( is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) ) {
+	require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+}
 
 // Initialize the plugin Autoloader.
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'mi11er-utility' . DIRECTORY_SEPARATOR . 'class-autoloader.php';

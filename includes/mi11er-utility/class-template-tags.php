@@ -29,7 +29,10 @@ class Template_Tags
 	 * @return mixed
 	 */
 	public static function __callStatic( $tag, $arguments ) {
-		array_key_exists( self::$_tags, $tag ) || throw new BadFunctionCallException;
+		if ( ! array_key_exists( self::$_tags, $tag ) ) {
+			throw new BadFunctionCallException;
+		}
+
 		return call_user_func_array( self::$_tags[ $tag ], $arguments );
 	}
 
@@ -42,7 +45,9 @@ class Template_Tags
 	 * @return bool Was the tag set sucessfully
 	 */
 	public static function add_tag( $tag, $function ) {
-		! array_key_exists( self::$_tags, $tag ) ) || is_callable( $function ) || return false;
+		if ( ! array_key_exists( $tag, self::$_tags ) || ! is_callable( $function ) ) {
+			return false;
+		}
 
 		self::$_tags[ $tag ] = $function;
 		return true;
