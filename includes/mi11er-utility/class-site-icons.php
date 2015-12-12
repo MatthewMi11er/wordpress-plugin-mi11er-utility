@@ -97,4 +97,30 @@ class Site_Icons
 	function customize_the_customizer( $wp_customize ) {
 		$wp_customize->remove_control( 'site_icon' );
 	}
+	
+	/**
+	 * TODO: Route to my images
+	 * http://wordpress.stackexchange.com/a/157441
+	 */
+  /**
+    * Run a filter to obtain some custom url settings, compare them to the current url
+    * and if a match is found the custom callback is fired, the custom view is loaded
+    * and request is stopped.
+    * Must run on 'do_parse_request' filter hook.
+    */
+   public function parse( $result ) {
+     if ( current_filter() !== 'do_parse_request' ) {
+       return $result;
+     }
+		 
+		 if(PHP_URL_PATH === 'test123'){
+			 echo 'i did it.';
+			 exit();
+		 }
+    /* $custom_urls = (array) apply_filters( 'my_custom_urls', array() );
+     if ( $this->match( $custom_urls ) && $this->run() ) {
+       exit(); // stop WordPress workflow
+     }*/
+     return $result;
+   }
 }

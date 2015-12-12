@@ -40,6 +40,7 @@ class Init
 	 */
 	public function register_filters() {
 		add_filter( 'option_site_icon', __NAMESPACE__ . '\Site_Icons::option_site_icon_filter' );
+		add_filter( 'do_parse_request', __NAMESPACE__ . '\Site_Icons::do_parse_request_filter', 10, 3 );
 
 		return $this;
 	}
@@ -47,9 +48,9 @@ class Init
 	/**
 	 * Register All the primary action hooks.
 	 */
-	public function register_filters() {
-		add_action( 'wp_head',            __NAMESPACE__ . '\Icons::the_icon_links' );
-		add_action( 'customize_register', __NAMESPACE__ . '\Icons::customize_the_customizer', 11 );
+	public function register_actions() {
+		add_action( 'wp_head',            __NAMESPACE__ . '\Site_Icons::the_icon_links' );
+		add_action( 'customize_register', __NAMESPACE__ . '\Site_Icons::customize_register', 11 );
 
 		return $this;
 	}
