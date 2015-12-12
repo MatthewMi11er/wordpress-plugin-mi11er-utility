@@ -19,6 +19,6 @@ if ( class_exists( 'Mi11er\Utility\Init' ) || ! defined( 'ABSPATH' ) ) {
 }
 
 // Initialize the plugin.
-require_once __DIR__ . DIRECTORY_SEPERATOR . 'includes' . DIRECTORY_SEPERATOR . 'mi11er-utility' . DIRECTORY_SEPERATOR . 'class-autoloader.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'mi11er-utility' . DIRECTORY_SEPARATOR . 'class-autoloader.php';
 $mi11er_utility = new Init();
 
