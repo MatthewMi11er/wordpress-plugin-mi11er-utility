@@ -11,26 +11,114 @@ use Mi11er\Utility\Template_Tags as TT;
 
 /**
  * This class provides functions for loading the site favicons
- * The images below must be accessable from the site root:
- *   - favicon.ico
- *   - apple-touch-icon-precomposed.png
- *   - apple-touch-icon-precomposed-57x57.png
- *   - apple-touch-icon-precomposed-72x72.png
- *   - apple-touch-icon-precomposed-76x76.png
- *   - apple-touch-icon-precomposed-114x114.png
- *   - apple-touch-icon-precomposed-120x120.png
- *   - apple-touch-icon-precomposed-144x144.png
- *   - apple-touch-icon-precomposed-152x152.png
- *   - windows-live-tile-144x144.png
- *   - windows-live-tile-128x128.png
- *   - windows-live-tile-270x270.png
- *   - windows-live-tile-558x558.png
- *   - windows-live-tile-558x270.png
- *
- * TODO: Figure out a way to load these dynamically (eg. from a filter).
  */
-class Site_Icons
+class Site_Icons implements Plugin_Interface
 {
+	/**
+	 * List of files that this plugin will serve.
+	 * Image files are assumed to exist at the site root.
+	 * Over ride location with the appropriate filter.
+	 * Missing images will be served as an empty png.
+	 * @todo Set location via site option and media manager.
+	 * @todo confirm this list.
+	 * @var array
+	 */
+	protected $_files = [
+		'apple-touch-icon-57x57.png',
+		'apple-touch-icon-60x60.png',
+		'apple-touch-icon-72x72.png',
+		'apple-touch-icon-76x76.png',
+		'apple-touch-icon-114x114.png',
+		'apple-touch-icon-120x120.png',
+		'apple-touch-icon-144x144.png',
+		'apple-touch-icon-152x152.png',
+		'apple-touch-icon-180x180.png',
+		'favicon-32x32.png',
+		'favicon-194x194.png',
+		'favicon-96x96.png',
+		'android-chrome-192x192.png',
+		'favicon-16x16.png',
+		'manifest.json',
+		'safari-pinned-tab.svg',
+		'mstile-144x144.png',
+		'favicon.ico',
+	];
+
+	/**
+	 * Run whatever is needed for plugin setup
+	 */
+	public function setup() {
+		// Actions.
+		add_action( 'customize_register', [ $this, 'customize_register_action' ],     10 );
+		add_action( 'wp_head',            [ $this, 'wp_head_action' ],                10 );
+
+		// Filters.
+		add_filetr( 'do_parse_request',   [ $this, 'do_parse_request_filter' ],       10 );
+		add_filter( 'option_site_icon',   [ $this, 'option_site_icon_filter' ],       10 );
+
+		// Tags.
+		TT::add_tag( 'the_icon_links', [ $this, 'the_icon_links' ] );
+	}
+
+	/**
+	 * Hook into the Customizer
+	 *
+	 * @param WP_Customize_Manager $wp_customize Customizer object.
+	 */
+	public function customize_register_action( $wp_customize ) {
+		/**
+		 * Since we're over ridding them...
+		 * Remove the default wp-site-icon settings in the Customizer.
+		 * @todo print message that this settng is overridden.
+		 */
+		$wp_customize->remove_control( 'site_icon' );
+	}
+
+	/**
+	 * Hook into the wp_head function.
+	 * @see wp_head()
+	 */
+	public function wp_head_action() {
+		$this->the_icon_links();
+	}
+
+	/**
+	 * Turns the built in site_icon option setting to prevent it from interfearing with this plugin.
+	 * @param mixed $value Value of the option.
+	 * @return int 0
+	 */
+	public static function option_site_icon_filter( $value ) {
+		return 0;
+	}
+
+	/**
+	 * Skip wordpress routing and do our own for certin requests
+	 * Eg. @see http://wordpress.stackexchange.com/a/157441
+	 * To allow favicon.ico rotuing: @see https://gist.github.com/westonruter/715246
+	 * Must run on 'do_parse_request' filter hook.
+	 *
+	 * @param bool         $continue             Whether or not to parse the request. Default true.
+	 * @param WP           $instance             Current WordPress environment instance.
+	 * @param array|string $extra_query_vars     Extra passed query variables.
+	 *
+	 * @return bool
+	 */
+	public static function do_parse_request_filter( $continue, $instance, $extra_query_vars ) {
+		 /**
+		  * Only run inside the do_parse_request_filter.
+		  * Only run when it's a url we care about.
+		  */
+		'do_parse_request' === current_filter() ) && in_array( $request_path = untrailingslashit( parse_url( add_query_arg( array() ), PHP_URL_PATH ) ), $this->_files ) || return $continue;
+
+		switch ( $request_path ) {
+			default:
+			$file = new Sendfile( apply_filters( 'mu_site_icons_' . $request_path, $request_path ) );
+			$file->send();
+		}
+		// @todo return file;
+		exit();
+	}
+
 	/**
 	 * Print the favicon links
 	 * TODO: theme-color
@@ -77,49 +165,5 @@ class Site_Icons
 			$prefix = 0 === $key ? 'polling-uri' : ';polling-uri' . ( $key + 1 );
 			echo esc_attr( $prefix . '=' . $value );
 		}
-	}
-
-	/**
-	 * Overrides the site_icon option setting to prevent built in wp-site-icon from interfearing with this plugin.
-	 * TODO: add fliter to allow override.
-	 * @param mixed $value Value of the option.
-	 * @return int 0
-	 */
-	public static function option_site_icon_filter( $value ) {
-		return 0;
-	}
-
-	/**
-	 * Remove the default wp-site-icon settings in the Customizer.
-	 *
-	 * @param WP_Customize_Manager $wp_customize Customizer object.
-	 */
-	public static function customize_register( $wp_customize ) {
-		$wp_customize->remove_control( 'site_icon' );
-	}
-
-	/**
-	 * Skip wordpress routing and do our own for certin requests
-	 * Eg. http://wordpress.stackexchange.com/a/157441
-	 * Must run on 'do_parse_request' filter hook.
-	 *
-	 * @param bool         $continue             Whether or not to parse the request. Default true.
-	 * @param WP           $instance             Current WordPress environment instance.
-	 * @param array|string $extra_query_vars     Extra passed query variables.
-	 *
-	 * @return bool
-	 */
-	public static function do_parse_request_filter( $continue, $instance, $extra_query_vars ) {
-		// Only run inside the do_parse_request_filter.
-		if ( 'do_parse_request' !== current_filter() ) {
-			return $continue;
-		}
-
-		$request_path = untrailingslashit( parse_url( add_query_arg( array() ), PHP_URL_PATH ) );
-		if ( '/test123' === $request_path ) {
-			echo 'i did it.';
-			exit();
-		}
-		return $continue;
 	}
 }

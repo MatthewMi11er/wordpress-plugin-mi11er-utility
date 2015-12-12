@@ -13,16 +13,18 @@ namespace Mi11er\Utility;
 final class Mu
 {
 	/**
-	 * The Actions Class
-	 * @var Mi11er\Utility\Actions Action Handler.
+	 * Registery
+	 * @var array.
 	 */
-	protected $_actions = null;
+	protected $_registery = [];
 
 	/**
-	 * The Filters Class
-	 * @var Mi11er\Utility\Actions Filters Handler.
+	 * Plugins
+	 * @var array.
 	 */
-	protected $_filters = null;
+	protected $_plugins = [
+		'Site_Icons',
+	];
 
 	/**
 	 * A empty constructor. Nothing should be done here.
@@ -47,9 +49,33 @@ final class Mu
 	}
 
 	/**
+	 * Magic method for checking the existence of a certain custom field.
+	 *
+	 * @param string $key Key to check the set status for.
+	 *
+	 * @return bool
+	 */
+	public function __isset( $key ) {
+		return isset( $this->data[ $key ] );
+	}
+
+	/**
+	 * Magic method for getting Miller Utility variables.
+	 *
+	 * @param string $key Key to return the value for.
+	 *
+	 * @return mixed
+	 */
+	public function __get( $key ) {
+		0 !== strpos( $key, 'plugin_' ) ) || return $this->_get_plugin( $key );
+
+		return isset( $this->_registery[ $key ] ) ? $this->_registery[ $key ] : null;
+	}
+
+	/**
 	 * Main Miller Utility Instance
 	 *
-	 * This is what you call a signleton. I'm still not sure this is the best way.
+	 * I think this is what you call a signleton. I'm still not sure this is the best way.
 	 *
 	 * @return Mi11er\Utility\Mu The one and only.
 	 */
@@ -61,37 +87,33 @@ final class Mu
 			$instance = new Mu;
 
 			// Do stuff.
-			$instanace->register_actions();
-			$instanace->register_filters();
-
-			/*
-			$instance->constants();
-			$instance->setup_globals();
-			$instance->legacy_constants();
-			$instance->includes();
-			$instance->setup_actions();
-				*/
+			$instanace->setup_plugins();
 		}
 		return $instance;
 	}
 
 	/**
-	 * Register All the primary action hooks.
+	 * Setup the distinct areas of this plugins.
 	 */
-	protected function register_actions() {
-		if ( null === $this->_actions ) {
-			$this->_actions = new Actions();
-			$this->_actions->register_hooks();
+	protected function setup_plugins() {
+		foreach ( $this->_plugins as $plugin ) {
+			$this->'plugin_' . $plugin->setup();
 		}
 	}
 
 	/**
-	 * Register All the primary filter hooks.
+	 * Get the plugin object. Inistalize if not set.
+	 *
+	 * @param string $key Key to return the value for.
+	 *
+	 * @return Mi11er\Utility\Plugin_Interface
 	 */
-	public function register_filters() {
-		if ( null === $this->_filters ) {
-			$this->_filters = new Filters();
-			$this->_filters->register_hooks();
-		}
+	public function _get_plugin( $key ) {
+		! isset( $this->$key ) || return $this->_registery[ $key ];
+
+		$plugin = ucwords( substr( $key, 7, 0 ), '_' );
+		! in_array( $plugin, $this->_plugins ) || apply_filters( 'mu_disable_' . $key, true ) || return new $plugin;
+
+		return null;
 	}
 }
