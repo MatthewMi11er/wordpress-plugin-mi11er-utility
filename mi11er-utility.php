@@ -3,6 +3,7 @@
  * Plugin Name: Mi11er Utility
  * Plugin URI:
  * Description: It does various helpful things.
+ * Text Domain: mi11er-utility
  * Author:
  * Author URI:
  * Version:
@@ -11,14 +12,24 @@
  * @package Mi11er\Utility
  */
 
-namespace Mi11er\Utility;
-
 // In case someone integrates this plugin in a theme or calling this directly.
-if ( class_exists( 'Mi11er\Utility\Init' ) || ! defined( 'ABSPATH' ) ) {
-	return;
+defined( 'ABSPATH' ) || ! function_exists( 'mu' ) || return;
+
+// Initialize the composer autoloader.
+is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) && require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+// Initialize the plugin Autoloader.
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'mi11er-utility' . DIRECTORY_SEPARATOR . 'class-autoloader.php';
+
+/**
+ * Return the plugin contoler
+ * Causes it to initalize if not already
+ *
+ * @return Mi11er\Utility\Mu
+ */
+function mu() {
+	return Mi11er\Utility\Mu::instance();
 }
 
-// Initialize the plugin.
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'mi11er-utility' . DIRECTORY_SEPARATOR . 'class-autoloader.php';
-$mi11er_utility = new Init();
-
+// This seems like a good time to kick things off.
+$GLOBALS['mu'] = mu();
