@@ -104,7 +104,6 @@ final class Mu
 				$this->$plugin_name->setup();
 			}
 		}
-		die( 'a' );
 	}
 
 	/**

@@ -53,7 +53,7 @@ class Site_Icons implements Plugin_Interface
 		add_action( 'wp_head',            [ $this, 'wp_head_action' ],                10 );
 
 		// Filters.
-		add_filter( 'do_parse_request',   [ $this, 'do_parse_request_filter' ],       10 );
+		add_filter( 'do_parse_request',   [ $this, 'do_parse_request_filter' ],       10, 3 );
 		add_filter( 'option_site_icon',   [ $this, 'option_site_icon_filter' ],       10 );
 
 		// Tags.
@@ -103,12 +103,12 @@ class Site_Icons implements Plugin_Interface
 	 *
 	 * @return bool
 	 */
-	public static function do_parse_request_filter( $continue, $instance, $extra_query_vars ) {
+	public function do_parse_request_filter( $continue, $instance, $extra_query_vars ) {
 		/**
 		 * Only run inside the do_parse_request_filter.
 		 * Only run when it's a url we care about.
 		 */
-		if ( 'do_parse_request' !== current_filter() || ! in_array( $request_path = untrailingslashit( parse_url( add_query_arg( array() ), PHP_URL_PATH ) ), $this->_files ) ) {
+		if ( 'do_parse_request' !== current_filter() || ! in_array( ltrim( $request_path = untrailingslashit( parse_url( add_query_arg( array() ), PHP_URL_PATH ) ), '/'), $this->_files ) ) {
 			return $continue;
 		}
 
