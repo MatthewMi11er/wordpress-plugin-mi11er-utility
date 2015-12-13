@@ -24,24 +24,36 @@ class Site_Icons implements Plugin_Interface
 	 * @var array
 	 */
 	protected $_files = [
-		'apple-touch-icon-57x57.png',
-		'apple-touch-icon-60x60.png',
-		'apple-touch-icon-72x72.png',
-		'apple-touch-icon-76x76.png',
+		'android-chrome-144x144.png',
+		'android-chrome-192x192.png',
+		'android-chrome-36x36.png',
+		'android-chrome-48x48.png',
+		'android-chrome-72x72.png',
+		'android-chrome-96x96.png',
 		'apple-touch-icon-114x114.png',
 		'apple-touch-icon-120x120.png',
 		'apple-touch-icon-144x144.png',
 		'apple-touch-icon-152x152.png',
 		'apple-touch-icon-180x180.png',
-		'favicon-32x32.png',
-		'favicon-194x194.png',
-		'favicon-96x96.png',
-		'android-chrome-192x192.png',
+		'apple-touch-icon-57x57.png',
+		'apple-touch-icon-60x60.png',
+		'apple-touch-icon-72x72.png',
+		'apple-touch-icon-76x76.png',
+		'apple-touch-icon-precomposed.png',
+		'apple-touch-icon.png',
+		'browserconfig.xml',
 		'favicon-16x16.png',
-		'manifest.json',
-		'safari-pinned-tab.svg',
-		'mstile-144x144.png',
+		'favicon-194x194.png',
+		'favicon-32x32.png',
+		'favicon-96x96.png',
 		'favicon.ico',
+		'manifest.json',
+		'mstile-144x144.png',
+		'mstile-150x150.png',
+		'mstile-310x150.png',
+		'mstile-310x310.png',
+		'mstile-70x70.png',
+		'safari-pinned-tab.svg',
 	];
 
 	/**
@@ -108,15 +120,22 @@ class Site_Icons implements Plugin_Interface
 		 * Only run inside the do_parse_request_filter.
 		 * Only run when it's a url we care about.
 		 */
-		if ( 'do_parse_request' !== current_filter() || ! in_array( ltrim( $request_path = untrailingslashit( parse_url( add_query_arg( array() ), PHP_URL_PATH ) ), '/'), $this->_files ) ) {
+		if ( 'do_parse_request' !== current_filter() || ! in_array( ltrim( $request_path = untrailingslashit( parse_url( add_query_arg( array() ), PHP_URL_PATH ) ), '/' ), $this->_files ) ) {
 			return $continue;
 		}
 
 		switch ( $request_path ) {
+			case 'browserconfig.xml':
+			echo ( dirname(dirname(dirname( __FILE__ ))) . '/templates/browserconfig.php');
+				load_template( dirname(dirname(dirname( __FILE__ ))) . '/templates/browserconfig.php' );
+				break;
+			case 'manifest.json':
+				break;
 			default:
 				$file = new Sendfile( apply_filters( 'mu_site_icons_' . $request_path, $request_path ) );
 				$file->send();
 		}
+		wp_die();
 		// @todo return file;
 		exit();
 	}

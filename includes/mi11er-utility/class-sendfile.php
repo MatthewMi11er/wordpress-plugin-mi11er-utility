@@ -10,13 +10,12 @@ namespace Mi11er\Utility;
 /**
  * Manage the sending of static files
  */
-class Sendfile {
+class Sendfile
+{
 
 	public function __construct( $file ) {
-		
 	}
-	
-	public function send(){
-		
+
+	public function send() {
 	}
 }
