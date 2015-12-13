@@ -98,7 +98,7 @@ final class Mu
 	 * Get the plugin teplate directory
 	 * @return string
 	 */
-	public function get_template_directory(){
+	public function get_template_directory() {
 		return dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . 'templates';
 	}
 	/**
