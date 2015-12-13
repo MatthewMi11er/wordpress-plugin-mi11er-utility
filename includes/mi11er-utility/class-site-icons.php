@@ -24,36 +24,36 @@ class Site_Icons implements Plugin_Interface
 	 * @var array
 	 */
 	protected $_files = [
-		'android-chrome-144x144.png',
-		'android-chrome-192x192.png',
-		'android-chrome-36x36.png',
-		'android-chrome-48x48.png',
-		'android-chrome-72x72.png',
-		'android-chrome-96x96.png',
-		'apple-touch-icon-114x114.png',
-		'apple-touch-icon-120x120.png',
-		'apple-touch-icon-144x144.png',
-		'apple-touch-icon-152x152.png',
-		'apple-touch-icon-180x180.png',
-		'apple-touch-icon-57x57.png',
-		'apple-touch-icon-60x60.png',
-		'apple-touch-icon-72x72.png',
-		'apple-touch-icon-76x76.png',
-		'apple-touch-icon-precomposed.png',
-		'apple-touch-icon.png',
-		'browserconfig.xml',
-		'favicon-16x16.png',
-		'favicon-194x194.png',
-		'favicon-32x32.png',
-		'favicon-96x96.png',
-		'favicon.ico',
-		'manifest.json',
-		'mstile-144x144.png',
-		'mstile-150x150.png',
-		'mstile-310x150.png',
-		'mstile-310x310.png',
-		'mstile-70x70.png',
-		'safari-pinned-tab.svg',
+		'android-chrome-36x36.png'         => '^android-chrome-36x36\.png$',
+		'android-chrome-48x48.png'         => '^android-chrome-48x48\.png$',
+		'android-chrome-72x72.png'         => '^android-chrome-72x72\.png$',
+		'android-chrome-96x96.png'         => '^android-chrome-96x96\.png$',
+		'android-chrome-192x192.png'       => '^android-chrome-192x192\.png$',
+		'android-chrome-144x144.png'       => '^android-chrome-144x144\.png$',
+		'apple-touch-icon-57x57.png'       => '^apple-touch-icon-57x57\.png$',
+		'apple-touch-icon-60x60.png'       => '^apple-touch-icon-60x60\.png$',
+		'apple-touch-icon-72x72.png'       => '^apple-touch-icon-72x72\.png$',
+		'apple-touch-icon-76x76.png'       => '^apple-touch-icon-76x76\.png$',
+		'apple-touch-icon-114x114.png'     => '^apple-touch-icon-114x114\.png$',
+		'apple-touch-icon-120x120.png'     => '^apple-touch-icon-120x120\.png$',
+		'apple-touch-icon-144x144.png'     => '^apple-touch-icon-144x144\.png$',
+		'apple-touch-icon-152x152.png'     => '^apple-touch-icon-152x152\.png$',
+		'apple-touch-icon-180x180.png'     => '^apple-touch-icon-180x180\.png$',
+		'apple-touch-icon-precomposed.png' => '^apple-touch-icon-precomposed\.png$',
+		'apple-touch-icon.png'             => '^apple-touch-icon\.png$',
+		'browserconfig.xml'                => '^browserconfig\.xml$',
+		'favicon-16x16.png'                => '^favicon-16x16\.png$',
+		'favicon-32x32.png'                => '^favicon-32x32\.png$',
+		'favicon-96x96.png'                => '^favicon-96x96\.png$',
+		'favicon-194x194.png'              => '^favicon-194x194\.png$',
+		'favicon.ico'                      => '^favicon\.ico$',
+		'manifest.json'                    => '^manifest\.json$',
+		'mstile-70x70.png'                 => '^mstile-70x70\.png$',
+		'mstile-144x144.png'               => '^mstile-144x144\.png$',
+		'mstile-150x150.png'               => '^mstile-150x150\.png$',
+		'mstile-310x150.png'               => '^mstile-310x150\.png$',
+		'mstile-310x310.png'               => '^mstile-310x310\.png$',
+		'safari-pinned-tab.svg'            => '^safari-pinned-tab\.svg$',
 	];
 
 	/**
@@ -61,19 +61,20 @@ class Site_Icons implements Plugin_Interface
 	 */
 	public function setup() {
 		// Actions.
-		add_action( 'customize_register', [ $this, 'customize_register_action' ],     10 );
-		add_action( 'wp_head',            [ $this, 'wp_head_action' ],                10 );
+		add_action( 'customize_register',     [ $this, 'customize_register_action' ],     10 );
+		add_action( 'init',                   [ $this, 'init_action' ],                   10 );
+		add_action( 'wp_head',                [ $this, 'wp_head_action' ],                10 );
 
 		// Filters.
-		add_filter( 'do_parse_request',   [ $this, 'do_parse_request_filter' ],       10, 3 );
-		add_filter( 'option_site_icon',   [ $this, 'option_site_icon_filter' ],       10 );
+		add_filter( 'option_site_icon',   [ $this, 'option_site_icon_filter' ],           10, 1 );
+		add_filter( 'template_include',   [ $this, 'template_include_filter' ],           10, 1 );
 
 		// Tags.
 		TT::add_tag( 'the_icon_links', [ $this, 'the_icon_links' ] );
 	}
 
 	/**
-	 * Hook into the Customizer
+	 * Callback for the `customize_register` action
 	 *
 	 * @param WP_Customize_Manager $wp_customize Customizer object.
 	 */
@@ -87,14 +88,37 @@ class Site_Icons implements Plugin_Interface
 	}
 
 	/**
-	 * Hook into the wp_head function.
+	 * Callback for the `init` action hook
+	 * Fires after WordPress has finished loading but before any headers are sent.
+	 *
+	 * Most of WP is loaded at this stage, and the user is authenticated. WP continues
+	 * to load on the init hook that follows (e.g. widgets), and many plugins instantiate
+	 * themselves on it for all sorts of reasons (e.g. they need a user, a taxonomy, etc.).
+	 *
+	 * If you wish to plug an action once WP is loaded, use the wp_loaded hook below.
+	 */
+	public function init_action() {
+		/**
+		 * Add custom rewrite rules so we can handle
+		 * the icon files.
+		 */
+		foreach ( $this->_files as $file => $rewrite ) {
+			add_rewrite_rule( $rewrite, 'index.php?mu_site_icons_file=' . $file , 'top' );
+		}
+		add_rewrite_tag( '%mu_site_icons_file%', '([^&]+)' );
+	}
+
+	/**
+	 * Callback for the `wp_head` action hook
 	 * @see wp_head()
 	 */
 	public function wp_head_action() {
+		// Display our icons in the header.
 		$this->the_icon_links();
 	}
 
 	/**
+	 * Callback for the `option_site_icon` filer hook
 	 * Turns the built in site_icon option setting to prevent it from interfearing with this plugin.
 	 * @param mixed $value Value of the option.
 	 * @return int 0
@@ -104,40 +128,30 @@ class Site_Icons implements Plugin_Interface
 	}
 
 	/**
-	 * Skip wordpress routing and do our own for certin requests
-	 * Eg. @see http://wordpress.stackexchange.com/a/157441
-	 * To allow favicon.ico rotuing: @see https://gist.github.com/westonruter/715246
-	 * Must run on 'do_parse_request' filter hook.
+	 * Callback for the template_include filter hook
+	 * Filter the path of the current template before including it.
 	 *
-	 * @param bool         $continue             Whether or not to parse the request. Default true.
-	 * @param WP           $instance             Current WordPress environment instance.
-	 * @param array|string $extra_query_vars     Extra passed query variables.
-	 *
-	 * @return bool
+	 * @param string $template The path of the template to include.
 	 */
-	public function do_parse_request_filter( $continue, $instance, $extra_query_vars ) {
-		/**
-		 * Only run inside the do_parse_request_filter.
-		 * Only run when it's a url we care about.
-		 */
-		if ( 'do_parse_request' !== current_filter() || ! in_array( ltrim( $request_path = untrailingslashit( parse_url( add_query_arg( array() ), PHP_URL_PATH ) ), '/' ), $this->_files ) ) {
-			return $continue;
+	public function template_include_filter( $template ) {
+		// Check if we're dealing stuff we care about.
+		if ( ! array_key_exists( $mu_site_icons_file = get_query_var( 'mu_site_icons_file' ), $this->_files ) ) {
+			return $template;
 		}
 
-		switch ( $request_path ) {
-			case 'browserconfig.xml':
-			echo ( dirname(dirname(dirname( __FILE__ ))) . '/templates/browserconfig.php');
-				load_template( dirname(dirname(dirname( __FILE__ ))) . '/templates/browserconfig.php' );
+		$template_directory = mu()->get_template_directory() . DIRECTORY_SEPARATOR;
+
+		// Determine the correct template to load.
+		switch ( $mu_site_icons_file ) {
+			case 'browserconfig.xml' :
+				return $template_directory . 'browserconfig.php';
 				break;
-			case 'manifest.json':
+			case 'manifest.json' :
+				return $template_directory . 'manifest.php';
 				break;
 			default:
-				$file = new Sendfile( apply_filters( 'mu_site_icons_' . $request_path, $request_path ) );
-				$file->send();
+				return $template_directory . 'icons.php';
 		}
-		wp_die();
-		// @todo return file;
-		exit();
 	}
 
 	/**
