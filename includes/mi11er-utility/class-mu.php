@@ -7,6 +7,8 @@
 
 namespace Mi11er\Utility;
 
+use Mi11er\Utility\Template_Tags as TT;
+
 /**
  * Plugin Intialization
  */
@@ -94,13 +96,6 @@ final class Mu
 		return $instance;
 	}
 
-	/**
-	 * Get the plugin teplate directory
-	 * @return string
-	 */
-	public function get_template_directory() {
-		return dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . 'templates';
-	}
 	/**
 	 * Setup the distinct areas of this plugins.
 	 */

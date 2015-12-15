@@ -63,4 +63,12 @@ class Template_Tags
 	public static function the_home_url( $path = '', $scheme = null ) {
 		echo esc_url( home_url( $path, $scheme ) );
 	}
+
+	/**
+	 * Get the plugin teplate directory
+	 * @return string
+	 */
+	public static function get_mu_template_directory() {
+		return dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . 'templates';
+	}
 }
