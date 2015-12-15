@@ -11,6 +11,10 @@ use Mi11er\Utility\Template_Tags as TT;
 
 /**
  * This class provides functions for loading the site favicons
+ *
+ * If not running Nginx or to disable serving the icons through this plugin's php,
+ * place icon image files at site root and/or set MU_SITE_ICONS_NO_NGINX = true.
+ * @todo get settings from DB in addtion to using filters.
  */
 class Site_Icons implements Plugin_Interface
 {
@@ -57,21 +61,35 @@ class Site_Icons implements Plugin_Interface
 	];
 
 	/**
+	 * The Request File Handler
+	 * Set when the request is for an icon image file.
+	 * @var Mi11er\Utity\Sendfile
+	 */
+	protected $_request_file = null;
+
+	/**
 	 * Run whatever is needed for plugin setup
 	 */
 	public function setup() {
 		// Actions.
-		add_action( 'customize_register',     [ $this, 'customize_register_action' ],     10 );
-		add_action( 'init',                   [ $this, 'init_action' ],                   10 );
-		add_action( 'wp_head',                [ $this, 'wp_head_action' ],                10 );
+		add_action( 'customize_register',                [ $this, 'customize_register_action' ],     10 );
+		add_action( 'init',                              [ $this, 'init_action' ],                   10 );
+		add_action( 'wp_head',                           [ $this, 'wp_head_action' ],                10 );
 
 		// Filters.
-		add_filter( 'option_site_icon',   [ $this, 'option_site_icon_filter' ],           10, 1 );
-		add_filter( 'template_include',   [ $this, 'template_include_filter' ],           10, 1 );
+		add_filter( 'option_site_icon',                  [ $this, 'option_site_icon_filter' ],       10, 1 );
+		add_filter( 'template_include',                  [ $this, 'template_include_filter' ],       10, 1 );
 
 		// Tags.
-		TT::add_tag( 'the_icon_links', [ $this, 'the_icon_links' ] );
+		TT::add_tag( 'get_the_site_icon_url',            [ $this, 'get_the_site_icon_url' ] );
+		TT::add_tag( 'the_icon_links',                   [ $this, 'the_icon_links' ] );
+		TT::add_tag( 'the_site_icon_tile_color',         [ $this, 'the_site_icon_tile_color' ] );
+		TT::add_tag( 'the_site_icon_url',                [ $this, 'the_site_icon_url' ] );
 	}
+
+	/**
+	 * ================Actions
+	 */
 
 	/**
 	 * Callback for the `customize_register` action
@@ -118,6 +136,10 @@ class Site_Icons implements Plugin_Interface
 	}
 
 	/**
+	 * ================Filters
+	 */
+
+	/**
 	 * Callback for the `option_site_icon` filer hook
 	 * Turns the built in site_icon option setting to prevent it from interfearing with this plugin.
 	 * @param mixed $value Value of the option.
@@ -139,20 +161,42 @@ class Site_Icons implements Plugin_Interface
 			return $template;
 		}
 
-		$template_directory = mu()->get_template_directory() . DIRECTORY_SEPARATOR;
+		$template_directory = trailingslashit( TT::get_mu_template_directory() );
 
 		// Determine the correct template to load.
-		switch ( $mu_site_icons_file ) {
-			case 'browserconfig.xml' :
-				return $template_directory . 'browserconfig.php';
-				break;
-			case 'manifest.json' :
-				return $template_directory . 'manifest.php';
-				break;
-			default:
-				return $template_directory . 'icons.php';
+		if ( 'browserconfig.xml' === $mu_site_icons_file ) {
+			return $template_directory . 'browserconfig.php';
+		} elseif ( 'manifest.json' === $mu_site_icons_file ) {
+			return $template_directory . 'manifest.php';
+		} elseif ( ! defined( 'MU_SITE_ICONS_NO_NGINX' ) || false === MU_SITE_ICONS_NO_NGINX ) {
+			/**
+			 * Use the filter to override this.
+			 * If you really place your icon files at the root it should never get to this point anyway.
+			 */
+			$icon_location = '/';
+
+			/**
+			 * Filter where the icons are stored.
+			 * Using this requires nginx.
+			 * The location must be understood by nginx but can be internal or external.
+			 *
+			 * @todo make this work with other servers.
+			 * @todo allow setting of file names in addtion to location.
+			 *
+			 * @param string $icon_location The location of the icons.
+			 */
+			$icon_location = trailingslashit( applay_filters( 'mu_site_icons_location', $icon_location ) );
+			$this->_request_file = new Sendfile( $icon_location . $mu_site_icons_file );
+			return $template_directory . 'icons.php';
 		}
+
+		// If it gets to here it's not something we deal with.
+		return $template;
 	}
+
+	/**
+	 * ================Tags
+	 */
 
 	/**
 	 * Print the favicon links
@@ -160,35 +204,79 @@ class Site_Icons implements Plugin_Interface
 	 * TODO: maskicon color
 	 * TODO: File Names
 	 */
-	public static function the_icon_links() {
+	public function the_icon_links() {
 		$msapplication_notification_polling_uris = apply_filters( 'mi11er_utility_favicon_msapplication_notification_urls', array( home_url( '/feed/' ) ) );
 		$msapplication_tile_color                = apply_filters( 'mi11er_utility_favicon_msapplication_tile_color', '#005596' );
 		$msapplication_name                      = apply_filters( 'mi11er_utility_favicon_msapplication_name', get_bloginfo( 'name' ) );
 		$msapplication_tooltip                   = apply_filters( 'mi11er_utility_favicon_msapplication_tooltip', get_bloginfo( 'description' ) );
 ?>
 		<!-- ======================== BEGIN SITE ICONS ======================== -->
-		<link rel="apple-touch-icon" sizes="57x57" href="<?php TT::the_home_url( '/apple-touch-icon-57x57.png' ); ?>">
-		<link rel="apple-touch-icon" sizes="60x60" href="<?php TT::the_home_url( '/apple-touch-icon-60x60.png' ); ?>">
-		<link rel="apple-touch-icon" sizes="72x72" href="<?php TT::the_home_url( '/apple-touch-icon-72x72.png' ); ?>">
-		<link rel="apple-touch-icon" sizes="76x76" href="<?php TT::the_home_url( '/apple-touch-icon-76x76.png' ); ?>">
-		<link rel="apple-touch-icon" sizes="114x114" href="<?php TT::the_home_url( '/apple-touch-icon-114x114.png' ); ?>">
-		<link rel="apple-touch-icon" sizes="120x120" href="<?php TT::the_home_url( '/apple-touch-icon-120x120.png' ); ?>">
-		<link rel="apple-touch-icon" sizes="144x144" href="<?php TT::the_home_url( '/apple-touch-icon-144x144.png' ); ?>">
-		<link rel="apple-touch-icon" sizes="152x152" href="<?php TT::the_home_url( '/apple-touch-icon-152x152.png' ); ?>">
-		<link rel="apple-touch-icon" sizes="180x180" href="<?php TT::the_home_url( '/apple-touch-icon-180x180.png' ); ?>">
-		<link rel="icon" type="image/png" href="<?php TT::the_home_url( '/favicon-32x32.png' ); ?>" sizes="32x32">
-		<link rel="icon" type="image/png" href="<?php TT::the_home_url( '/favicon-194x194.png' ); ?>" sizes="194x194">
-		<link rel="icon" type="image/png" href="<?php TT::the_home_url( '/favicon-96x96.png' ); ?>" sizes="96x96">
-		<link rel="icon" type="image/png" href="<?php TT::the_home_url( '/android-chrome-192x192.png' ); ?>" sizes="192x192">
-		<link rel="icon" type="image/png" href="<?php TT::the_home_url( '/favicon-16x16.png' ); ?>" sizes="16x16">
-		<link rel="manifest" href="<?php TT::the_home_url( '/manifest.json' ); ?>">
-		<link rel="mask-icon" href="<?php TT::the_home_url( '/safari-pinned-tab.svg' ); ?>" color="#5bbad5">
+		<link rel="apple-touch-icon" sizes="57x57" href="<?php TT::the_site_icon_url( 'apple-touch-icon-57x57.png' ); ?>">
+		<link rel="apple-touch-icon" sizes="60x60" href="<?php TT::the_site_icon_url( 'apple-touch-icon-60x60.png' ); ?>">
+		<link rel="apple-touch-icon" sizes="72x72" href="<?php TT::the_site_icon_url( 'apple-touch-icon-72x72.png' ); ?>">
+		<link rel="apple-touch-icon" sizes="76x76" href="<?php TT::the_site_icon_url( 'apple-touch-icon-76x76.png' ); ?>">
+		<link rel="apple-touch-icon" sizes="114x114" href="<?php TT::the_site_icon_url( 'apple-touch-icon-114x114.png' ); ?>">
+		<link rel="apple-touch-icon" sizes="120x120" href="<?php TT::the_site_icon_url( 'apple-touch-icon-120x120.png' ); ?>">
+		<link rel="apple-touch-icon" sizes="144x144" href="<?php TT::the_site_icon_url( 'apple-touch-icon-144x144.png' ); ?>">
+		<link rel="apple-touch-icon" sizes="152x152" href="<?php TT::the_site_icon_url( 'apple-touch-icon-152x152.png' ); ?>">
+		<link rel="apple-touch-icon" sizes="180x180" href="<?php TT::the_site_icon_url( 'apple-touch-icon-180x180.png' ); ?>">
+		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-32x32.png' ); ?>" sizes="32x32">
+		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-194x194.png' ); ?>" sizes="194x194">
+		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-96x96.png' ); ?>" sizes="96x96">
+		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'android-chrome-192x192.png' ); ?>" sizes="192x192">
+		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-16x16.png' ); ?>" sizes="16x16">
+		<link rel="manifest" href="<?php TT::the_site_icon_url( 'manifest.json' ); ?>">
+		<link rel="mask-icon" href="<?php TT::the_site_icon_url( 'safari-pinned-tab.svg' ); ?>" color="#5bbad5">
+		<link rel="shortcut icon" href="<?php TT::the_site_icon_url( 'favicon.ico?' ); ?>">
+		<meta name="apple-mobile-web-app-title" content="test">
+		<meta name="application-name" content="test">
 		<meta name="msapplication-TileColor" content="<?php echo esc_attr( $msapplication_tile_color ); ?>">
-		<meta name="msapplication-TileImage" content="<?php TT::the_home_url( '/mstile-144x144.png' ); ?>">
+		<meta name="msapplication-TileImage" content="<?php TT::the_site_icon_url( 'mstile-144x144.png' ); ?>">
 		<meta name="theme-color" content="#ffffff">
 		<!-- ======================== END SITE ICONS ======================== -->
 <?php
 	}
+
+	/**
+	 * Prints the desired Icon tile color.
+	 */
+	public function the_site_icon_tile_color() {
+		/**
+		 * Filter the icon tile color
+		 * @param string The icon color.
+		 */
+		echo esc_attr( apply_filters( 'mu_site_icons_tile_color', '#ffffff' ) );
+	}
+
+	/**
+	 * Return the url for the specificed site icon.
+	 *
+	 * @throws \UnexpectedValueException If the icon is not on THE LIST.
+	 *
+	 * @param string $icon_name The name of the icon to get.
+	 *
+	 * @return string
+	 */
+	public function get_the_site_icon_url( $icon_name ) {
+		if ( ! array_key_exists( $icon_name , $this->_files ) ) {
+			throw new \UnexpectedValueException( $icon_name . ' is not a known Icon' );
+		}
+
+		return home_url( '/' . $icon_name );
+	}
+
+	/**
+	 * Print the url for the specificed site icon.
+	 *
+	 * @param string $icon_name The name of the icon to get.
+	 */
+	public function the_site_icon_url( $icon_name ) {
+		echo esc_url( TT::get_the_site_icon_url( $icon_name ) );
+	}
+
+	/**
+	 * ================Misc
+	 */
 
 	/**
 	 * Echos concatenated msapplication-notification polling uri string
