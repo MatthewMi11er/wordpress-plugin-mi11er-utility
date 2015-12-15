@@ -29,8 +29,8 @@ class Template_Tags
 	 * @return mixed
 	 */
 	public static function __callStatic( $tag, $arguments ) {
-		if ( ! array_key_exists( self::$_tags, $tag ) ) {
-			throw new BadFunctionCallException;
+		if ( ! array_key_exists( $tag, self::$_tags ) ) {
+			throw new BadFunctionCallException( $tag . ' not defined' );
 		}
 
 		return call_user_func_array( self::$_tags[ $tag ], $arguments );
@@ -39,18 +39,22 @@ class Template_Tags
 	/**
 	 * Add a callable tag.
 	 *
+	 * @throws \RuntimeException If the tag is already set.
+	 * @throws \InvalidArgumentException If function is not callable.
+	 *
 	 * @param string   $tag The name of the tag.
 	 * @param callable $function The callback.
-	 *
-	 * @return bool Was the tag set sucessfully
 	 */
 	public static function add_tag( $tag, $function ) {
-		if ( ! array_key_exists( $tag, self::$_tags ) || ! is_callable( $function ) ) {
-			return false;
+		if ( array_key_exists( $tag, self::$_tags ) ) {
+			throw new \RuntimeException( 'Template Tag already defined' );
+		}
+
+		if ( ! is_callable( $function ) ) {
+			throw new \InvalidArgumentException( 'Function for `'. $tag . '` tag must be callable' );
 		}
 
 		self::$_tags[ $tag ] = $function;
-		return true;
 	}
 
 	/**
