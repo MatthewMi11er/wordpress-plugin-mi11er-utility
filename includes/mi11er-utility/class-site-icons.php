@@ -78,7 +78,9 @@ class Site_Icons implements Plugin_Interface
 
 		// Filters.
 		add_filter( 'option_site_icon',                  [ $this, 'option_site_icon_filter' ],       10, 1 );
+		add_filter( 'redirect_canonical',                [ $this, 'redirect_canonical' ],            10, 2 );
 		add_filter( 'template_include',                  [ $this, 'template_include_filter' ],       10, 1 );
+
 
 		// Tags.
 		TT::add_tag( 'get_the_site_icon_url',            [ $this, 'get_the_site_icon_url' ] );
@@ -147,6 +149,27 @@ class Site_Icons implements Plugin_Interface
 	 */
 	public static function option_site_icon_filter( $value ) {
 		return 0;
+	}
+
+	/**
+	 * Callback for the `redirect_canonical` filter hook
+	 * Filter the canonical redirect URL.
+	 *
+	 * Returning false to this filter will cancel the redirect.
+	 *
+	 * @param string $redirect_url  The redirect URL.
+	 * @param string $requested_url The requested URL.
+	 *
+	 * @return bool|string
+	 */
+	public function redirect_canonical( $redirect_url, $requested_url ) {
+		// Check if we're dealing stuff we care about.
+		if ( ! array_key_exists( $mu_site_icons_file = get_query_var( 'mu_site_icons_file' ), $this->_files ) ) {
+			return $redirect_url;
+		}
+		
+		// None of our files should have a tralining slash.
+		return false;
 	}
 
 	/**
