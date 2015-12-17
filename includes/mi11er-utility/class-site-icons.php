@@ -311,7 +311,7 @@ class Site_Icons implements Plugin_Interface
 	/**
 	 * Prints the application tool tip.
 	 */
-	public function the_application_tool_tip() {
+	public function the_application_tooltip() {
 		/**
 		 * Filters the application tooltip
 		 * @param string The application tooltip.
