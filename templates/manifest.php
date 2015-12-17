@@ -10,7 +10,7 @@ namespace Mi11er\Utility;
 use Mi11er\Utility\Template_Tags as TT;
 
 $manifest = [
-	'name' => 'test',
+	'name' => TT::get_the_site_name(),
 	'icons' => [
 		[
 			'src' => TT::get_the_site_icon_url( 'android-chrome-36x36.png' ),

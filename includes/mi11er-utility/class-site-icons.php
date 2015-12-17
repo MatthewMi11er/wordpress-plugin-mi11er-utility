@@ -32,6 +32,12 @@
  *  - mstile-310x310.png
  *  - safari-pinned-tab.svg
  *
+ * Filters (@todo also use site options)
+ *  - mu_site_icons_site_name
+ *  - mu_site_icons_application_tooltip
+ *  - mu_site_icons_tile_color
+ *  - mu_site_icons_theme_color
+ *
  * @package Mi11er\Utility
  */
 
@@ -100,20 +106,24 @@ class Site_Icons implements Plugin_Interface
 	 */
 	public function setup() {
 		// Actions.
-		add_action( 'customize_register',                [ $this, 'customize_register_action' ],     10 );
-		add_action( 'init',                              [ $this, 'init_action' ],                   10 );
-		add_action( 'wp_head',                           [ $this, 'wp_head_action' ],                10 );
+		add_action( 'customize_register',        [ $this, 'customize_register_action' ],     10 );
+		add_action( 'init',                      [ $this, 'init_action' ],                   10 );
+		add_action( 'wp_head',                   [ $this, 'wp_head_action' ],                10 );
 
 		// Filters.
-		add_filter( 'option_site_icon',                  [ $this, 'option_site_icon_filter' ],       10, 1 );
-		add_filter( 'redirect_canonical',                [ $this, 'redirect_canonical' ],            10, 2 );
-		add_filter( 'template_include',                  [ $this, 'template_include_filter' ],       10, 1 );
+		add_filter( 'option_site_icon',          [ $this, 'option_site_icon_filter' ],       10, 1 );
+		add_filter( 'redirect_canonical',        [ $this, 'redirect_canonical' ],            10, 2 );
+		add_filter( 'template_include',          [ $this, 'template_include_filter' ],       10, 1 );
 
 		// Tags.
-		TT::add_tag( 'get_the_site_icon_url',            [ $this, 'get_the_site_icon_url' ] );
-		TT::add_tag( 'the_icon_links',                   [ $this, 'the_icon_links' ] );
-		TT::add_tag( 'the_site_icon_tile_color',         [ $this, 'the_site_icon_tile_color' ] );
-		TT::add_tag( 'the_site_icon_url',                [ $this, 'the_site_icon_url' ] );
+		TT::add_tag( 'get_the_site_icon_url',    [ $this, 'get_the_site_icon_url' ] );
+		TT::add_tag( 'get_the_site_name',        [ $this, 'get_the_site_name' ] );
+		TT::add_tag( 'the_application_tooltip',  [ $this, 'the_application_tooltip' ] );
+		TT::add_tag( 'the_icon_links',           [ $this, 'the_icon_links' ] );
+		TT::add_tag( 'the_site_icon_tile_color', [ $this, 'the_site_icon_tile_color' ] );
+		TT::add_tag( 'the_site_icon_url',        [ $this, 'the_site_icon_url' ] );
+		TT::add_tag( 'the_site_name',            [ $this, 'the_site_name' ] );
+		TT::add_tag( 'the_theme_color',          [ $this, 'the_theme_color' ] );
 	}
 
 	/**
@@ -234,10 +244,6 @@ class Site_Icons implements Plugin_Interface
 	 * TODO: File Names
 	 */
 	public function the_icon_links() {
-		$msapplication_notification_polling_uris = apply_filters( 'mi11er_utility_favicon_msapplication_notification_urls', array( home_url( '/feed/' ) ) );
-		$msapplication_tile_color                = apply_filters( 'mi11er_utility_favicon_msapplication_tile_color', '#005596' );
-		$msapplication_name                      = apply_filters( 'mi11er_utility_favicon_msapplication_name', get_bloginfo( 'name' ) );
-		$msapplication_tooltip                   = apply_filters( 'mi11er_utility_favicon_msapplication_tooltip', get_bloginfo( 'description' ) );
 ?>
 		<!-- ======================== BEGIN SITE ICONS ======================== -->
 		<link rel="apple-touch-icon" sizes="57x57" href="<?php TT::the_site_icon_url( 'apple-touch-icon-57x57.png' ); ?>">
@@ -254,27 +260,17 @@ class Site_Icons implements Plugin_Interface
 		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-96x96.png' ); ?>" sizes="96x96">
 		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'android-chrome-192x192.png' ); ?>" sizes="192x192">
 		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-16x16.png' ); ?>" sizes="16x16">
-		<link rel="manifest" href="<?php TT::the_site_icon_url( 'manifest.json' ); ?>">
+		<link rel="manifest" href="<?php TT::the_home_url( '/manifest.json' ); ?>">
 		<link rel="mask-icon" href="<?php TT::the_site_icon_url( 'safari-pinned-tab.svg' ); ?>" color="#5bbad5">
 		<link rel="shortcut icon" href="<?php TT::the_site_icon_url( 'favicon.ico' ); ?>">
-		<meta name="apple-mobile-web-app-title" content="test">
-		<meta name="application-name" content="test">
-		<meta name="msapplication-TileColor" content="<?php echo esc_attr( $msapplication_tile_color ); ?>">
+		<meta name="apple-mobile-web-app-title" content="<?php TT::the_site_name(); ?>">
+		<meta name="application-name" content="<?php TT::the_site_name(); ?>">
+		<meta name="msapplication-TileColor" content="<?php TT::the_site_icon_tile_color(); ?>">
 		<meta name="msapplication-TileImage" content="<?php TT::the_site_icon_url( 'mstile-144x144.png' ); ?>">
-		<meta name="theme-color" content="#ffffff">
+		<meta name="theme-color" content="<?php TT::the_theme_color(); ?>">
+		<meta name="msapplication-tooltip" content="<?php TT::the_application_tooltip(); ?>" />
 		<!-- ======================== END SITE ICONS ======================== -->
 <?php
-	}
-
-	/**
-	 * Prints the desired Icon tile color.
-	 */
-	public function the_site_icon_tile_color() {
-		/**
-		 * Filter the icon tile color
-		 * @param string The icon color.
-		 */
-		echo esc_attr( apply_filters( 'mu_site_icons_tile_color', '#ffffff' ) );
 	}
 
 	/**
@@ -300,6 +296,41 @@ class Site_Icons implements Plugin_Interface
 	}
 
 	/**
+	 * Return the Application name for the site
+	 *
+	 * @return string
+	 */
+	public function get_the_site_name() {
+		/**
+		 * Filter the site name
+		 * @param string The site name.
+		 */
+		return apply_filters( 'mu_site_icons_site_name', get_bloginfo( 'name' ) );
+	}
+
+	/**
+	 * Prints the application tool tip.
+	 */
+	public function the_application_tool_tip() {
+		/**
+		 * Filters the application tooltip
+		 * @param string The application tooltip.
+		 */
+		echo esc_attr( apply_filters( 'mu_site_icons_application_tooltip', get_bloginfo( 'description' ) ) );
+	}
+
+	/**
+	 * Prints the desired Icon tile color.
+	 */
+	public function the_site_icon_tile_color() {
+		/**
+		 * Filter the icon tile color
+		 * @param string The icon color.
+		 */
+		echo esc_attr( apply_filters( 'mu_site_icons_tile_color', '#ffffff' ) );
+	}
+
+	/**
 	 * Print the url for the specificed site icon.
 	 *
 	 * @param string $icon_name The name of the icon to get.
@@ -309,18 +340,18 @@ class Site_Icons implements Plugin_Interface
 	}
 
 	/**
-	 * ================Misc
+	 * Print the Application name for the site
 	 */
-
+	public function the_site_name() {
+		echo esc_attr( TT::get_the_site_name() );
+	}
+	
 	/**
-	 * Echos concatenated msapplication-notification polling uri string
+	 * Print the theme color for the site
 	 *
-	 * @param array $msapplication_notification_polling_uris The list of uris to print.
+	 * @todo Setup an appropriate option.
 	 */
-	public static function the_msapplication_notification_polling_uris( $msapplication_notification_polling_uris ) {
-		foreach ( $msapplication_notification_polling_uris as $key => $value ) {
-			$prefix = 0 === $key ? 'polling-uri' : ';polling-uri' . ( $key + 1 );
-			echo esc_attr( $prefix . '=' . $value );
-		}
+	public function the_theme_color() {
+		echo esc_attr( apply_filters( 'mu_site_icons_theme_color', '#ffffff' ) );
 	}
 }
