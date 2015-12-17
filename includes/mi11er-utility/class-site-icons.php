@@ -345,7 +345,7 @@ class Site_Icons implements Plugin_Interface
 	public function the_site_name() {
 		echo esc_attr( TT::get_the_site_name() );
 	}
-	
+
 	/**
 	 * Print the theme color for the site
 	 *
