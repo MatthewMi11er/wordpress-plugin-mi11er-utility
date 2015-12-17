@@ -58,6 +58,14 @@ class Template_Tags
 	}
 
 	/**
+	 * Get the plugin teplate directory
+	 * @return string
+	 */
+	public static function get_mu_template_directory() {
+		return dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . 'templates';
+	}
+
+	/**
 	 * Echos the home url for the current site with optional path appended.
 	 *
 	 * @param  string $path   Optional. Path relative to the home url. Default empty.
@@ -69,10 +77,21 @@ class Template_Tags
 	}
 
 	/**
-	 * Get the plugin teplate directory
-	 * @return string
+	 * Returns the Website Root Directory. Calculated from
+	 * `ABSPATH` and `home`/`siteurl` options.
+	 * Works similar to Wordpress get_home_path but better(?).
+	 *
+	 * @return string Website Root with trailing slash.
 	 */
-	public static function get_mu_template_directory() {
-		return dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . 'templates';
+	public static function get_the_root_directory() {
+		$home    = set_url_scheme( get_option( 'home', '' ), 'http' );
+		$siteurl = set_url_scheme( get_option( 'siteurl', '' ), 'http' );
+		if ( '' === $home  || 0 === strcasecmp( $home, $siteurl ) ) {
+			return ABSPATH;
+		}
+
+		$wp_path_rel_to_home = trailingslashit( str_ireplace( $home, '', $siteurl ) ); /* $siteurl - $home */
+		$pos = strripos( str_replace( '\\', '/', ABSPATH ), $wp_path_rel_to_home );
+		return trailingslashit( substr( ABSPATH, 0, $pos ) );
 	}
 }

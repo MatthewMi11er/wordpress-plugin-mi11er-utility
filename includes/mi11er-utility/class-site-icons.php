@@ -2,6 +2,36 @@
 /**
  * Favicons and other icons
  *
+ * This assumes that the following files are in the site root:
+ *  - android-chrome-36x36.png
+ *  - android-chrome-48x48.png
+ *  - android-chrome-72x72.png
+ *  - android-chrome-96x96.png
+ *  - android-chrome-192x192.png
+ *  - android-chrome-144x144.png
+ *  - apple-touch-icon-57x57.pn'
+ *  - apple-touch-icon-60x60.png
+ *  - apple-touch-icon-72x72.png
+ *  - apple-touch-icon-76x76.png
+ *  - apple-touch-icon-114x114.png
+ *  - apple-touch-icon-120x120.png
+ *  - apple-touch-icon-144x144.png
+ *  - apple-touch-icon-152x152.png
+ *  - apple-touch-icon-180x180.png
+ *  - apple-touch-icon-precomposed.png
+ *  - apple-touch-icon.png
+ *  - favicon-16x16.png
+ *  - favicon-32x32.png
+ *  - favicon-96x96.png
+ *  - favicon-194x194.png
+ *  - favicon.ico
+ *  - mstile-70x70.png
+ *  - mstile-144x144.png
+ *  - mstile-150x150.png
+ *  - mstile-310x150.png
+ *  - mstile-310x310.png
+ *  - safari-pinned-tab.svg
+ *
  * @package Mi11er\Utility
  */
 
@@ -14,58 +44,56 @@ use Mi11er\Utility\Template_Tags as TT;
  *
  * If not running Nginx or to disable serving the icons through this plugin's php,
  * place icon image files at site root and/or set MU_SITE_ICONS_NO_NGINX = true.
+ *
  * @todo get settings from DB in addtion to using filters.
  */
 class Site_Icons implements Plugin_Interface
 {
 	/**
 	 * List of files that this plugin will serve.
-	 * Image files are assumed to exist at the site root.
-	 * Over ride location with the appropriate filter.
-	 * Missing images will be served as an empty png.
-	 * @todo Set location via site option and media manager.
-	 * @todo confirm this list.
+	 *
 	 * @var array
 	 */
 	protected $_files = [
-		'android-chrome-36x36.png'         => '^android-chrome-36x36\.png$',
-		'android-chrome-48x48.png'         => '^android-chrome-48x48\.png$',
-		'android-chrome-72x72.png'         => '^android-chrome-72x72\.png$',
-		'android-chrome-96x96.png'         => '^android-chrome-96x96\.png$',
-		'android-chrome-192x192.png'       => '^android-chrome-192x192\.png$',
-		'android-chrome-144x144.png'       => '^android-chrome-144x144\.png$',
-		'apple-touch-icon-57x57.png'       => '^apple-touch-icon-57x57\.png$',
-		'apple-touch-icon-60x60.png'       => '^apple-touch-icon-60x60\.png$',
-		'apple-touch-icon-72x72.png'       => '^apple-touch-icon-72x72\.png$',
-		'apple-touch-icon-76x76.png'       => '^apple-touch-icon-76x76\.png$',
-		'apple-touch-icon-114x114.png'     => '^apple-touch-icon-114x114\.png$',
-		'apple-touch-icon-120x120.png'     => '^apple-touch-icon-120x120\.png$',
-		'apple-touch-icon-144x144.png'     => '^apple-touch-icon-144x144\.png$',
-		'apple-touch-icon-152x152.png'     => '^apple-touch-icon-152x152\.png$',
-		'apple-touch-icon-180x180.png'     => '^apple-touch-icon-180x180\.png$',
-		'apple-touch-icon-precomposed.png' => '^apple-touch-icon-precomposed\.png$',
-		'apple-touch-icon.png'             => '^apple-touch-icon\.png$',
 		'browserconfig.xml'                => '^browserconfig\.xml$',
-		'favicon-16x16.png'                => '^favicon-16x16\.png$',
-		'favicon-32x32.png'                => '^favicon-32x32\.png$',
-		'favicon-96x96.png'                => '^favicon-96x96\.png$',
-		'favicon-194x194.png'              => '^favicon-194x194\.png$',
-		'favicon.ico'                      => '^favicon\.ico$',
 		'manifest.json'                    => '^manifest\.json$',
-		'mstile-70x70.png'                 => '^mstile-70x70\.png$',
-		'mstile-144x144.png'               => '^mstile-144x144\.png$',
-		'mstile-150x150.png'               => '^mstile-150x150\.png$',
-		'mstile-310x150.png'               => '^mstile-310x150\.png$',
-		'mstile-310x310.png'               => '^mstile-310x310\.png$',
-		'safari-pinned-tab.svg'            => '^safari-pinned-tab\.svg$',
 	];
 
 	/**
-	 * The Request File Handler
-	 * Set when the request is for an icon image file.
-	 * @var Mi11er\Utity\Sendfile
+	 * List of Icons
+	 *
+	 * @var array
 	 */
-	protected $_request_file = null;
+	protected $_icons = [
+		'android-chrome-36x36.png',
+		'android-chrome-48x48.png',
+		'android-chrome-72x72.png',
+		'android-chrome-96x96.png',
+		'android-chrome-192x192.png',
+		'android-chrome-144x144.png',
+		'apple-touch-icon-57x57.png',
+		'apple-touch-icon-60x60.png',
+		'apple-touch-icon-72x72.png',
+		'apple-touch-icon-76x76.png',
+		'apple-touch-icon-114x114.png',
+		'apple-touch-icon-120x120.png',
+		'apple-touch-icon-144x144.png',
+		'apple-touch-icon-152x152.png',
+		'apple-touch-icon-180x180.png',
+		'apple-touch-icon-precomposed.png',
+		'apple-touch-icon.png',
+		'favicon-16x16.png',
+		'favicon-32x32.png',
+		'favicon-96x96.png',
+		'favicon-194x194.png',
+		'favicon.ico',
+		'mstile-70x70.png',
+		'mstile-144x144.png',
+		'mstile-150x150.png',
+		'mstile-310x150.png',
+		'mstile-310x310.png',
+		'safari-pinned-tab.svg',
+	];
 
 	/**
 	 * Run whatever is needed for plugin setup
@@ -80,7 +108,6 @@ class Site_Icons implements Plugin_Interface
 		add_filter( 'option_site_icon',                  [ $this, 'option_site_icon_filter' ],       10, 1 );
 		add_filter( 'redirect_canonical',                [ $this, 'redirect_canonical' ],            10, 2 );
 		add_filter( 'template_include',                  [ $this, 'template_include_filter' ],       10, 1 );
-
 
 		// Tags.
 		TT::add_tag( 'get_the_site_icon_url',            [ $this, 'get_the_site_icon_url' ] );
@@ -123,7 +150,9 @@ class Site_Icons implements Plugin_Interface
 		 * the icon files.
 		 */
 		foreach ( $this->_files as $file => $rewrite ) {
-			add_rewrite_rule( $rewrite, 'index.php?mu_site_icons_file=' . $file , 'top' );
+			if ( false !== $rewrite ) {
+				add_rewrite_rule( $rewrite, 'index.php?mu_site_icons_file=' . $file , 'top' );
+			}
 		}
 		add_rewrite_tag( '%mu_site_icons_file%', '([^&]+)' );
 	}
@@ -167,7 +196,7 @@ class Site_Icons implements Plugin_Interface
 		if ( ! array_key_exists( $mu_site_icons_file = get_query_var( 'mu_site_icons_file' ), $this->_files ) ) {
 			return $redirect_url;
 		}
-		
+
 		// None of our files should have a tralining slash.
 		return false;
 	}
@@ -191,30 +220,7 @@ class Site_Icons implements Plugin_Interface
 			return $template_directory . 'browserconfig.php';
 		} elseif ( 'manifest.json' === $mu_site_icons_file ) {
 			return $template_directory . 'manifest.php';
-		} elseif ( ! defined( 'MU_SITE_ICONS_NO_NGINX' ) || false === MU_SITE_ICONS_NO_NGINX ) {
-			/**
-			 * Use the filter to override this.
-			 * If you really place your icon files at the root it should never get to this point anyway.
-			 */
-			$icon_location = '/';
-
-			/**
-			 * Filter where the icons are stored.
-			 * Using this requires nginx.
-			 * The location must be understood by nginx but can be internal or external.
-			 *
-			 * @todo make this work with other servers.
-			 * @todo allow setting of file names in addtion to location.
-			 *
-			 * @param string $icon_location The location of the icons.
-			 */
-			$icon_location = trailingslashit( applay_filters( 'mu_site_icons_location', $icon_location ) );
-			$this->_request_file = new Sendfile( $icon_location . $mu_site_icons_file );
-			return $template_directory . 'icons.php';
 		}
-
-		// If it gets to here it's not something we deal with.
-		return $template;
 	}
 
 	/**
@@ -250,7 +256,7 @@ class Site_Icons implements Plugin_Interface
 		<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-16x16.png' ); ?>" sizes="16x16">
 		<link rel="manifest" href="<?php TT::the_site_icon_url( 'manifest.json' ); ?>">
 		<link rel="mask-icon" href="<?php TT::the_site_icon_url( 'safari-pinned-tab.svg' ); ?>" color="#5bbad5">
-		<link rel="shortcut icon" href="<?php TT::the_site_icon_url( 'favicon.ico?' ); ?>">
+		<link rel="shortcut icon" href="<?php TT::the_site_icon_url( 'favicon.ico' ); ?>">
 		<meta name="apple-mobile-web-app-title" content="test">
 		<meta name="application-name" content="test">
 		<meta name="msapplication-TileColor" content="<?php echo esc_attr( $msapplication_tile_color ); ?>">
@@ -281,11 +287,16 @@ class Site_Icons implements Plugin_Interface
 	 * @return string
 	 */
 	public function get_the_site_icon_url( $icon_name ) {
-		if ( ! array_key_exists( $icon_name , $this->_files ) ) {
+		if ( ! in_array( $icon_name , $this->_icons ) ) {
 			throw new \UnexpectedValueException( $icon_name . ' is not a known Icon' );
 		}
+		$query_string = '';
+		$icon_file = TT::get_the_root_directory() . $icon_name;
+		if ( is_file( $icon_file ) ) {
+			$query_string = '?v=' . date( 'YmdHis', filemtime( $icon_file ) );
+		}
 
-		return home_url( '/' . $icon_name );
+		return home_url( '/' . $icon_name . $query_string );
 	}
 
 	/**
