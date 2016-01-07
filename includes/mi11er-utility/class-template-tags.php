@@ -66,17 +66,6 @@ class Template_Tags
 	}
 
 	/**
-	 * Echos the home url for the current site with optional path appended.
-	 *
-	 * @param  string $path   Optional. Path relative to the home url. Default empty.
-	 * @param  string $scheme Optional. Scheme to give the home url context. Accepts
-	 *                        'http', 'https', or 'relative'. Default null.
-	 */
-	public static function the_home_url( $path = '', $scheme = null ) {
-		echo esc_url( home_url( $path, $scheme ) );
-	}
-
-	/**
 	 * Returns the Website Root Directory. Calculated from
 	 * `ABSPATH` and `home`/`siteurl` options.
 	 * Works similar to Wordpress get_home_path but better(?).
@@ -93,5 +82,26 @@ class Template_Tags
 		$wp_path_rel_to_home = trailingslashit( str_ireplace( $home, '', $siteurl ) ); /* $siteurl - $home */
 		$pos = strripos( str_replace( '\\', '/', ABSPATH ), $wp_path_rel_to_home );
 		return trailingslashit( substr( ABSPATH, 0, $pos ) );
+	}
+
+	/**
+	 * Echos the home url for the current site with optional path appended.
+	 *
+	 * @param  string $path   Optional. Path relative to the home url. Default empty.
+	 * @param  string $scheme Optional. Scheme to give the home url context. Accepts
+	 *                        'http', 'https', or 'relative'. Default null.
+	 */
+	public static function the_home_url( $path = '', $scheme = null ) {
+		echo esc_url( home_url( $path, $scheme ) );
+	}
+
+	/**
+	 * Print theme directory URI, with optional path appended.
+	 */
+	public static function the_template_directory_uri( $path = '', $scheme = null ) {
+		if ( ! is_string( $path ) ) {
+			$path = '';
+		}
+		echo esc_url( set_url_scheme( trailingslashit( get_template_directory_uri() ) . ltrim( $path, '/' ), $scheme ) );
 	}
 }
