@@ -6,7 +6,7 @@
  * Text Domain: mi11er-utility
  * Author:
  * Author URI:
- * Version: 0.1.3
+ * Version: 0.1.4
  * License:
  * License URI:
  * @package Mi11er\Utility
