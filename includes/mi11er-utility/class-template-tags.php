@@ -91,7 +91,7 @@ class Template_Tags
 	 * @param  string $scheme Optional. Scheme to give the home url context. Accepts
 	 *                        'http', 'https', or 'relative'. Default null.
 	 */
-	public static function the_home_url( $path = '', $scheme = null ) {
+	public static function the_home_url( $path = '/', $scheme = null ) {
 		echo esc_url( home_url( $path, $scheme ) );
 	}
 
