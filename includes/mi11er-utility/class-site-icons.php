@@ -106,7 +106,7 @@ class Site_Icons implements Plugin_Interface
 	 */
 	public function setup() {
 		// Actions.
-		add_action( 'customize_register',        [ $this, 'customize_register_action' ],     10 );
+		add_action( 'customize_register',        [ $this, 'customize_register_action' ],     20, 1 );
 		add_action( 'init',                      [ $this, 'init_action' ],                   10 );
 		add_action( 'wp_head',                   [ $this, 'wp_head_action' ],                10 );
 
