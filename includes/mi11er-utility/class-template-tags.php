@@ -97,6 +97,10 @@ class Template_Tags
 
 	/**
 	 * Print theme directory URI, with optional path appended.
+	 *
+	 * @param  string $path   Optional. Path relative to the template direcotry uri. Default empty.
+	 * @param  string $scheme Optional. Scheme to give the home url context. Accepts
+	 *                        'http', 'https', or 'relative'. Default null.
 	 */
 	public static function the_template_directory_uri( $path = '', $scheme = null ) {
 		if ( ! is_string( $path ) ) {
