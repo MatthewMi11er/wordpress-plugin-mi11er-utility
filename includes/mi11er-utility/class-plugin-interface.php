@@ -13,4 +13,9 @@ interface Plugin_Interface
 	 * Run whatever is needed for plugin setup
 	 */
 	public function setup();
+
+	/**
+	 * Run whatever is needed ofr plugin activation
+	 */
+	public function activate();
 }

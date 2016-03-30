@@ -25,6 +25,10 @@ final class Mu
 	 * @var array.
 	 */
 	protected $_plugins = [
+		'Ap_Style',
+		'Author_Slug',
+		'Filters',
+		'File_Handler',
 		'Site_Icons',
 	];
 
@@ -62,7 +66,7 @@ final class Mu
 	}
 
 	/**
-	 * Magic method for getting Miller Utility variables.
+	 * Magic method for getting Mi11er Utility variables.
 	 *
 	 * @param string $key Key to return the value for.
 	 *
@@ -77,7 +81,7 @@ final class Mu
 	}
 
 	/**
-	 * Main Miller Utility Instance
+	 * Main Mi11er Utility Instance
 	 *
 	 * I think this is what you call a signleton. I'm still not sure this is the best way.
 	 *
@@ -92,6 +96,12 @@ final class Mu
 
 			// Do stuff.
 			$instance->setup_plugins();
+
+			// Register Actions.
+			add_action( 'init', [ $instance, 'init_action' ], 1 );
+
+			// Activation.
+			register_activation_hook( dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . 'mi11er-utility.php', [ $instance, 'activation' ] );
 		}
 		return $instance;
 	}
@@ -127,5 +137,28 @@ final class Mu
 		}
 
 		return null;
+	}
+
+	/**
+	 * Do whatever is necessary for plugin activation
+	 */
+	public function activation() {
+		foreach ( $this->_plugins as $plugin_name ) {
+			$plugin_name = strtolower( 'plugin_' . $plugin_name );
+			if ( apply_filters( 'mu_enable_' . $plugin_name, true ) ) {
+				$this->$plugin_name->activate();
+			}
+		}
+	}
+
+	/**
+	 * ================Actions
+	 */
+
+	/**
+	 * Callback for the `init` action hook
+	 */
+	public function init_action() {
+		load_plugin_textdomain( 'mi11er-utility', false, plugin_basename( dirname( dirname( __DIR__ ) ) ) . DIRECTORY_SEPARATOR . 'languages' );
 	}
 }

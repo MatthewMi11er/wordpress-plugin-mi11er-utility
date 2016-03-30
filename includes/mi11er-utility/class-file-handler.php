@@ -30,8 +30,16 @@ class File_Handler implements Plugin_Interface
 		add_action( 'init',                      [ $this, 'init_action' ],                   10 );
 
 		// Filters.
-		add_filter( 'redirect_canonical',        [ $this, 'redirect_canonical' ],            10, 2 );
+		add_filter( 'redirect_canonical',        [ $this, 'redirect_canonical_filter' ],     10, 2 );
 		add_filter( 'template_include',          [ $this, 'template_include_filter' ],       10, 1 );
+		add_filter( 'the_posts',                 [ $this, 'the_posts_filter' ],              1,  2 );
+	}
+
+	/**
+	 * Run whatever is needed ofr plugin activation
+	 */
+	public function activate() {
+		return;
 	}
 
 	/**
@@ -80,9 +88,9 @@ class File_Handler implements Plugin_Interface
 	 *
 	 * @return bool|string
 	 */
-	public function redirect_canonical( $redirect_url, $requested_url ) {
+	public function redirect_canonical_filter( $redirect_url, $requested_url ) {
 		// Check if we're dealing stuff we care about and optionally prevent addtion of trailing slash.
-		if ( false !== $file_config = $this->get_config() && $file_config['prevent_slash'] ) {
+		if ( false !== $this->get_config() && $this->get_config()['prevent_slash'] ) {
 			return false;
 		}
 
@@ -104,6 +112,50 @@ class File_Handler implements Plugin_Interface
 	}
 
 	/**
+	 * Callback for the `the_posts` filter hook
+	 *
+	 * @see https://gist.github.com/cubehouse/3839159
+	 * @see http://davejesch.com/2012/12/creating-virtual-pages-in-wordpress/
+	 * @see https://www.gowp.com/blog/inserting-custom-posts-loop/
+	 * @see http://stackoverflow.com/questions/14459921/how-to-add-new-post-without-adding-to-database-wordpress
+	 * @param array    $posts The array of retrieved posts.
+	 * @param WP_Query $wp_query The WP_Query instance (passed by reference).
+	 * @return array
+	 */
+	public function the_posts_filter( $posts, $wp_query ) {
+		$file_config = $this->get_config();
+		if ( false !== $file_config && $wp_query->is_main_query() && ! is_admin() ) {
+			$default_post = [
+				'post_author'    => 1,
+				'post_name'      => $file_config['file'],
+				'guid'           => esc_url( home_url( '/' . $file_config['file'] ) ),
+				'post_title'     => $file_config['file'],
+				'post_content'   => '',
+				'ID'             => -1 * ( unpack( 'N2', sha1( $file_config['file'], true ) )[1] & 0x0FFFFFFF ), // Hopefully unqiue enough.
+				'post_type'      => 'page',
+				'post_status'    => 'static',
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+				'comment_count'  => 0,
+				'post_date'      => current_time( 'mysql' ),
+				'post_date_gmt'  => current_time( 'mysql', 1 ),
+			];
+			$post = (object) array_merge( $default_post, $file_config['post'] );
+			$posts = [ $post ];
+
+			$wp_query->is_page     = true;
+			$wp_query->is_singular = true;
+			$wp_query->is_home     = false;
+			$wp_query->is_archive  = false;
+			$wp_query->is_category = false;
+			unset( $wp_query->query['error'] );
+			$wp_query->query_vars['error'] = '';
+			$wp_query->is_404      = false;
+		}
+		return $posts;
+	}
+
+	/**
 	 * ================Helpers
 	 */
 
@@ -112,13 +164,17 @@ class File_Handler implements Plugin_Interface
 	 *
 	 * @param string $file          The name of the file to handle.
 	 * @param string $rewrite       The rewrite rule to add for the file.
+	 * @param string $template      The template that should handle the file.
 	 * @param bool   $prevent_slash Whether we should stop rewrite_canonical from adding a slash.
+	 * @param array  $post          Post data (real or imagined) that we want to use to replace wp_query.
 	 */
-	public function add_config( $file, $rewrite, $prevent_slash = true ) {
+	public function add_config( $file, $rewrite, $template, $prevent_slash = true, $post = [] ) {
 		$this->_files[] = [
 			'file'          => $file,
 			'rewrite'       => $rewrite,
+			'template'      => $template,
 			'prevent_slash' => $prevent_slash,
+			'post'          => $post,
 		];
 	}
 
@@ -128,7 +184,8 @@ class File_Handler implements Plugin_Interface
 	 * @return mixed
 	 */
 	public function get_config() {
-		if ( array_key_exists( $file_key = get_query_var( 'mu_file_handler', false ), $this_->files ) ) {
+		$file_key = get_query_var( 'mu_file_handler', false );
+		if ( false !== $file_key && array_key_exists( $file_key, $this->_files ) ) {
 			return $this->_files[ $file_key ];
 		}
 

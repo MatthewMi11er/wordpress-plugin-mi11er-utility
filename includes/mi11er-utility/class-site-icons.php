@@ -48,23 +48,10 @@ use Mi11er\Utility\Template_Tags as TT;
 /**
  * This class provides functions for loading the site favicons
  *
- * If not running Nginx or to disable serving the icons through this plugin's php,
- * place icon image files at site root and/or set MU_SITE_ICONS_NO_NGINX = true.
- *
  * @todo get settings from DB in addtion to using filters.
  */
 class Site_Icons implements Plugin_Interface
 {
-	/**
-	 * List of files that this plugin will serve.
-	 *
-	 * @var array
-	 */
-	protected $_files = [
-		'browserconfig.xml'                => '^browserconfig\.xml$',
-		'manifest.json'                    => '^manifest\.json$',
-	];
-
 	/**
 	 * List of Icons
 	 *
@@ -91,7 +78,6 @@ class Site_Icons implements Plugin_Interface
 		'favicon-16x16.png',
 		'favicon-32x32.png',
 		'favicon-96x96.png',
-		'favicon-194x194.png',
 		'favicon.ico',
 		'mstile-70x70.png',
 		'mstile-144x144.png',
@@ -107,13 +93,11 @@ class Site_Icons implements Plugin_Interface
 	public function setup() {
 		// Actions.
 		add_action( 'customize_register',        [ $this, 'customize_register_action' ],     20, 1 );
-		add_action( 'init',                      [ $this, 'init_action' ],                   10 );
+		add_action( 'mu_file_handler',           [ $this, 'mu_file_handler_action' ],               10, 1 );
 		add_action( 'wp_head',                   [ $this, 'wp_head_action' ],                10 );
 
 		// Filters.
 		add_filter( 'option_site_icon',          [ $this, 'option_site_icon_filter' ],       10, 1 );
-		add_filter( 'redirect_canonical',        [ $this, 'redirect_canonical' ],            10, 2 );
-		add_filter( 'template_include',          [ $this, 'template_include_filter' ],       10, 1 );
 
 		// Tags.
 		TT::add_tag( 'get_the_site_icon_url',    [ $this, 'get_the_site_icon_url' ] );
@@ -124,6 +108,13 @@ class Site_Icons implements Plugin_Interface
 		TT::add_tag( 'the_site_icon_url',        [ $this, 'the_site_icon_url' ] );
 		TT::add_tag( 'the_site_name',            [ $this, 'the_site_name' ] );
 		TT::add_tag( 'the_theme_color',          [ $this, 'the_theme_color' ] );
+	}
+
+	/**
+	 * Run whatever is needed for plugin activation
+	 */
+	public function activate() {
+		return;
 	}
 
 	/**
@@ -145,26 +136,13 @@ class Site_Icons implements Plugin_Interface
 	}
 
 	/**
-	 * Callback for the `init` action hook
-	 * Fires after WordPress has finished loading but before any headers are sent.
-	 *
-	 * Most of WP is loaded at this stage, and the user is authenticated. WP continues
-	 * to load on the init hook that follows (e.g. widgets), and many plugins instantiate
-	 * themselves on it for all sorts of reasons (e.g. they need a user, a taxonomy, etc.).
-	 *
-	 * If you wish to plug an action once WP is loaded, use the wp_loaded hook below.
+	 * Callback for the `mu_file_handler` action hook
+	 * @param Mi11er\Utility\File_Handler $file_handler The file handler object.
 	 */
-	public function init_action() {
-		/**
-		 * Add custom rewrite rules so we can handle
-		 * the icon files.
-		 */
-		foreach ( $this->_files as $file => $rewrite ) {
-			if ( false !== $rewrite ) {
-				add_rewrite_rule( $rewrite, 'index.php?mu_site_icons_file=' . $file , 'top' );
-			}
-		}
-		add_rewrite_tag( '%mu_site_icons_file%', '([^&]+)' );
+	public function mu_file_handler_action( $file_handler ) {
+		$template_directory = trailingslashit( TT::get_mu_template_directory() );
+		$file_handler->add_config( 'browserconfig.xml', '^browserconfig\.xml$', $template_directory . 'browserconfig.php' , true );
+		$file_handler->add_config( 'manifest.json',     '^manifest\.json$',     $template_directory . 'manifest.php',       true );
 	}
 
 	/**
@@ -191,49 +169,6 @@ class Site_Icons implements Plugin_Interface
 	}
 
 	/**
-	 * Callback for the `redirect_canonical` filter hook
-	 * Filter the canonical redirect URL.
-	 *
-	 * Returning false to this filter will cancel the redirect.
-	 *
-	 * @param string $redirect_url  The redirect URL.
-	 * @param string $requested_url The requested URL.
-	 *
-	 * @return bool|string
-	 */
-	public function redirect_canonical( $redirect_url, $requested_url ) {
-		// Check if we're dealing stuff we care about.
-		if ( ! array_key_exists( $mu_site_icons_file = get_query_var( 'mu_site_icons_file' ), $this->_files ) ) {
-			return $redirect_url;
-		}
-
-		// None of our files should have a tralining slash.
-		return false;
-	}
-
-	/**
-	 * Callback for the template_include filter hook
-	 * Filter the path of the current template before including it.
-	 *
-	 * @param string $template The path of the template to include.
-	 */
-	public function template_include_filter( $template ) {
-		// Check if we're dealing stuff we care about.
-		if ( ! array_key_exists( $mu_site_icons_file = get_query_var( 'mu_site_icons_file' ), $this->_files ) ) {
-			return $template;
-		}
-
-		$template_directory = trailingslashit( TT::get_mu_template_directory() );
-
-		// Determine the correct template to load.
-		if ( 'browserconfig.xml' === $mu_site_icons_file ) {
-			return $template_directory . 'browserconfig.php';
-		} elseif ( 'manifest.json' === $mu_site_icons_file ) {
-			return $template_directory . 'manifest.php';
-		}
-	}
-
-	/**
 	 * ================Tags
 	 */
 
@@ -256,7 +191,6 @@ class Site_Icons implements Plugin_Interface
 	<link rel="apple-touch-icon" sizes="152x152" href="<?php TT::the_site_icon_url( 'apple-touch-icon-152x152.png' ); ?>">
 	<link rel="apple-touch-icon" sizes="180x180" href="<?php TT::the_site_icon_url( 'apple-touch-icon-180x180.png' ); ?>">
 	<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-32x32.png' ); ?>" sizes="32x32">
-	<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-194x194.png' ); ?>" sizes="194x194">
 	<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-96x96.png' ); ?>" sizes="96x96">
 	<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'android-chrome-192x192.png' ); ?>" sizes="192x192">
 	<link rel="icon" type="image/png" href="<?php TT::the_site_icon_url( 'favicon-16x16.png' ); ?>" sizes="16x16">
