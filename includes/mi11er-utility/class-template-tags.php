@@ -91,17 +91,79 @@ class Template_Tags
 	 * @param  string $scheme Optional. Scheme to give the home url context. Accepts
 	 *                        'http', 'https', or 'relative'. Default null.
 	 */
-	public static function the_home_url( $path = '/', $scheme = null ) {
+	public static function the_home_url( $path = '', $scheme = null ) {
 		echo esc_url( home_url( $path, $scheme ) );
 	}
 
 	/**
 	 * Print theme directory URI, with optional path appended.
+	 *
+	 * @param  string $path   Optional. Path relative to the template direcotry uri. Default empty.
+	 * @param  string $scheme Optional. Scheme to give the home url context. Accepts
+	 *                        'http', 'https', or 'relative'. Default null.
 	 */
 	public static function the_template_directory_uri( $path = '', $scheme = null ) {
 		if ( ! is_string( $path ) ) {
 			$path = '';
 		}
 		echo esc_url( set_url_scheme( trailingslashit( get_template_directory_uri() ) . ltrim( $path, '/' ), $scheme ) );
+	}
+
+	/**
+	 * ================ Formaters
+	 */
+
+	/**
+	 * Convert to title-case.
+	 *
+	 * @see https://github.com/MatthewMi11er/php-to-title-case
+	 * @param string $title The string title to convert.
+	 *
+	 * @return string
+	 */
+	public static function to_title_case( $title ) {
+		/**
+		 * Remove HTML like tags and entities
+		 */
+		$elements = '/<(code|var)[^>]*>.*?<\/\1>|<[^>]+>|&\S+;/';
+		preg_match_all( $elements, $title, $found_elements, PREG_OFFSET_CAPTURE );
+		$title = preg_replace( $elements, '', $title );
+
+		/**
+		 * These are words that generally should not be capitalized in the title.
+		 */
+		$smallWords = '/^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/iu';
+
+		$title_cased = preg_replace_callback('/[A-Za-z0-9\xC0-\xFF]+[^\s-]*/u', function( $matches ) use ( $title, $smallWords ) {
+			static $start_at = 0;
+
+			// Find where the match starts in our $title.
+			$offset = mb_strpos( $title, $matches[0], $start_at, 'UTF-8' );
+
+			// Move the pointer for the next match.
+			$start_at = $offset + mb_strlen( $matches[0],'UTF-8' );
+
+			if ( $offset > 0 && $offset + mb_strlen( $matches[0], 'UTF-8' ) !== mb_strlen( $title, 'UTF-8' )
+				&& preg_match( $smallWords, $matches[0] ) && ( $offset - 2 < 0 || mb_substr( $title, $offset - 2, 1 , 'UTF-8' ) !== ':' )
+				&& ( mb_substr( $title, $offset + mb_strlen( $matches[0], 'UTF-8' ), 1 ) !== '-'
+					|| $offset - 1 < 0 || mb_substr( $title, $offset - 1, 1, 'UTF-8' ) === '-' )
+				&& ( $offset - 1 < 0 || ! preg_match( '/[^\s-]/', mb_substr( $title, $offset - 1, 1, 'UTF-8' ) ) ) ) {
+				return mb_strtolower( $matches[0], 'UTF-8' );
+			}
+
+			if ( preg_match( '/[A-Z]|\../', mb_substr( $matches[0], 1, null, 'UTF-8' ) ) ) {
+				return $matches[0];
+			}
+
+			return mb_strtoupper( mb_substr( $matches[0], 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $matches[0], 1, null, 'UTF-8' );
+		}, $title);
+
+		/**
+		 * Try to put the HTML tags and entities back where they belong
+		 */
+		foreach ( $found_elements[0] as $element ) {
+			$title_cased = substr_replace( $title_cased, $element[0], $element[1], 0 );
+		}
+		return $title_cased;
 	}
 }

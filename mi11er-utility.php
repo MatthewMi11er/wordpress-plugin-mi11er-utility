@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) || class_exists( 'Mi11er\Utility\Mu' ) ) {
 	return;
 }
 
-// Initialize the composer autoloader.
+// Initialize the composer autoloader. Only used in testing.
 if ( is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) ) {
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 }
