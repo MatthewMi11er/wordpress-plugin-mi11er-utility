@@ -4,14 +4,14 @@
 	"repositories": [
 		{
 			"type": "composer",
-			"url": "http://wpackagist.org"
+			"url": "https://wpackagist.org"
 		}
 	],
-  "require": {
-    "composer/installers":"*"
-  },
-	"require-dev":{
+	"require": {
 		"php": ">=5.4",
+		"composer/installers":"*"
+  },
+	"suggest":{
 		"whatthejeff/fab-phpunit-resultprinter": "~1.1",
 		"phing/phing": "dev-master",
 		"phpunit/dbunit": "*",
