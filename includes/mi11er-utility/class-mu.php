@@ -29,6 +29,7 @@ final class Mu
 		'Author_Slug',
 		'Filters',
 		'File_Handler',
+		'Redirect',
 		'Site_Icons',
 	];
 
