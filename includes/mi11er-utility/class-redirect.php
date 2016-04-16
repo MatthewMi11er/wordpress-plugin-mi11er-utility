@@ -20,7 +20,7 @@ class Redirect implements Plugin_Interface
 {
 	const META_FIELD = '_mu_old_url_redirect';
 	const META_BOX   = 'mu-old-url-redirect';
-	const CACHE_KEY  = 'mu-old-url-redirect';
+	const CACHE_GROUP  = 'mu-old-url-redirect';
 	/**
 	 * Run whatever is needed for plugin setup
 	 */
@@ -80,6 +80,9 @@ class Redirect implements Plugin_Interface
 		if ( null === $request_url ) {
 			return;
 		}
+		var_dump($request_url);die();
+		$requet_path = trim( $request_url['path'], '/' ) // Remove leading and trailing slashes.
+		$cache_key = md5( $requet_path );
 
 		$link = false;
 		$query = $wpdb->prepare(
@@ -92,7 +95,7 @@ class Redirect implements Plugin_Interface
 			,self::META_FIELD
 			,trim( $request_url['path'], '/' ) // Remove leading and trailing slashes.
 		);
-		$cache_key = md5( serialize( $query ) );
+
 		if ( false === $id = wp_cache_get( $cache_key, self::CACHE_KEY ) ) {
 			$id = (int) $wpdb->get_var( $query );
 			wp_cache_set( $cache_key, $id, 'ofbf_oldsite_redrirect', 5 * MINUTE_IN_SECONDS );
