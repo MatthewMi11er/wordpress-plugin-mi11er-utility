@@ -72,38 +72,32 @@ class Redirect implements Plugin_Interface
 	public function template_redirect_action() {
 		global $wpdb;
 
-		if ( ! is_404() ) {
-			return;
-		}
+		//if ( ! is_404() ) {
+			//return;
+		//}
 
 		$request_url = TT::get_the_request_url();
 		if ( null === $request_url ) {
 			return;
 		}
-		var_dump($request_url);die();
-		$requet_path = trim( $request_url['path'], '/' ) // Remove leading and trailing slashes.
-		$cache_key = md5( $requet_path );
 
-		$link = false;
-		$query = $wpdb->prepare(
-			"
-				SELECT post_id
-				FROM $wpdb->postmeta
-				WHERE ( meta_key = %s )
-				  AND ( meta_value = %s )
-			"
-			,self::META_FIELD
-			,trim( $request_url['path'], '/' ) // Remove leading and trailing slashes.
-		);
+		$request_path = trim( $request_url['path'], '/' ); // Remove leading and trailing slashes.
 
-		if ( false === $id = wp_cache_get( $cache_key, self::CACHE_KEY ) ) {
-			$id = (int) $wpdb->get_var( $query );
-			wp_cache_set( $cache_key, $id, 'ofbf_oldsite_redrirect', 5 * MINUTE_IN_SECONDS );
+		$cache_key = md5( $request_path );
+		if (false === $link = wp_cache_get( $cache_key, self::CACHE_GROUP ) ) {
+			$args = [
+				'meta_query' => [[
+					'key' => self::META_FIELD,
+					'value' => $request_path,
+				]],
+				'posts_per_page' => 1,
+			];
+			$posts = get_posts( $args );
+			if (count( $posts ) === 1 ){
+				$link = get_permalink( $posts[0]->ID );
+			}
+			wp_cache_set( $cache_key, $link, self::CACHE_GROUP, 5 * MINUTE_IN_SECONDS );
 		}
-		if ( ! $id ) {
-			return;
-		}
-		$link = get_permalink( $id );
 
 		if ( ! $link ) {
 			return;
