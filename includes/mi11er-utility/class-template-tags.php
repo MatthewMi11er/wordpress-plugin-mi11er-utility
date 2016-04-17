@@ -66,6 +66,30 @@ class Template_Tags
 	}
 
 	/**
+	 * Get the request URL
+	 *
+	 * @return null|array An array of the various request URL Parts
+	 */
+	public static function get_the_request_url() {
+		// Deterimine if wordpress root is in a subdir.
+		$home_path = parse_url( home_url(), PHP_URL_PATH );
+		if ( ! is_string( $home_path ) ) {
+			$home_path = '/';
+		} else if ( '/' !== $home_path ) {
+			user_trailingslashit( $home_path );
+		}
+
+		$request_uri = filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL );
+
+		// Request URI not set; Bail.
+		if ( null === $request_uri ) {
+			return null;
+		}
+
+		return parse_url( home_url( preg_replace( '~^' . preg_quote( $home_path, '~' ) . '~', '', $request_uri ) ) );
+	}
+
+	/**
 	 * Returns the Website Root Directory. Calculated from
 	 * `ABSPATH` and `home`/`siteurl` options.
 	 * Works similar to Wordpress get_home_path but better(?).
@@ -85,6 +109,32 @@ class Template_Tags
 	}
 
 	/**
+	 * Retrieve home URL with proper trailing slash.
+	 *
+	 * @param string      $path   Path relative to home URL.
+	 * @param string|null $scheme Scheme to apply.
+	 *
+	 * @return string Home URL with optional path, appropriately slashed if not.
+	 */
+	public static function home_url( $path = '', $scheme = null ) {
+		$home_url = home_url( $path, $scheme );
+		if ( ! empty( $path ) ) {
+			return $home_url;
+		}
+		$home_path = parse_url( $home_url, PHP_URL_PATH );
+		if ( '/' === $home_path ) { // Home at site root, already slashed.
+			return $home_url;
+		}
+		if ( is_null( $home_path ) ) { // Home at site root, always slash.
+			return trailingslashit( $home_url );
+		}
+		if ( is_string( $home_path ) ) { // Home in subdirectory, slash if permalink structure has slash.
+			return user_trailingslashit( $home_url );
+		}
+		return $home_url;
+	}
+
+	/**
 	 * Echos the home url for the current site with optional path appended.
 	 *
 	 * @param  string $path   Optional. Path relative to the home url. Default empty.
@@ -92,7 +142,7 @@ class Template_Tags
 	 *                        'http', 'https', or 'relative'. Default null.
 	 */
 	public static function the_home_url( $path = '', $scheme = null ) {
-		echo esc_url( home_url( $path, $scheme ) );
+		echo esc_url( self::home_url( $path, $scheme ) );
 	}
 
 	/**
@@ -136,13 +186,10 @@ class Template_Tags
 
 		$title_cased = preg_replace_callback('/[A-Za-z0-9\xC0-\xFF]+[^\s-]*/u', function( $matches ) use ( $title, $smallWords ) {
 			static $start_at = 0;
-
 			// Find where the match starts in our $title.
 			$offset = mb_strpos( $title, $matches[0], $start_at, 'UTF-8' );
-
 			// Move the pointer for the next match.
 			$start_at = $offset + mb_strlen( $matches[0],'UTF-8' );
-
 			if ( $offset > 0 && $offset + mb_strlen( $matches[0], 'UTF-8' ) !== mb_strlen( $title, 'UTF-8' )
 				&& preg_match( $smallWords, $matches[0] ) && ( $offset - 2 < 0 || mb_substr( $title, $offset - 2, 1 , 'UTF-8' ) !== ':' )
 				&& ( mb_substr( $title, $offset + mb_strlen( $matches[0], 'UTF-8' ), 1 ) !== '-'
@@ -150,11 +197,9 @@ class Template_Tags
 				&& ( $offset - 1 < 0 || ! preg_match( '/[^\s-]/', mb_substr( $title, $offset - 1, 1, 'UTF-8' ) ) ) ) {
 				return mb_strtolower( $matches[0], 'UTF-8' );
 			}
-
 			if ( preg_match( '/[A-Z]|\../', mb_substr( $matches[0], 1, null, 'UTF-8' ) ) ) {
 				return $matches[0];
 			}
-
 			return mb_strtoupper( mb_substr( $matches[0], 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $matches[0], 1, null, 'UTF-8' );
 		}, $title);
 

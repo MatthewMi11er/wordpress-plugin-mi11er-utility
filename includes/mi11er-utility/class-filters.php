@@ -18,7 +18,7 @@ class Filters implements Plugin_Interface
 	 */
 	public function setup() {
 		add_filter( 'https_local_ssl_verify', [ $this, 'https_local_ssl_verify_filter' ], 10, 1 );
-		add_filter( 'is_email',               [ $this, 'is_email_filter'],                10, 3 );
+		add_filter( 'is_email',               [ $this, 'is_email_filter' ],               10, 3 );
 		add_filter( 'redirect_canonical',     [ $this, 'redirect_canonical_filter' ],      0, 2 );
 	}
 
@@ -41,7 +41,7 @@ class Filters implements Plugin_Interface
 		}
 		return $the_value;
 	}
-	
+
 	/**
 	 * Callback for the 'is_email' filter
 	 *
@@ -71,12 +71,12 @@ class Filters implements Plugin_Interface
 	 * @return bool|string
 	 */
 	public function redirect_canonical_filter( $redirect_url, $requested_url ) {
-		/** 
-		 * Filter if we want to remove the 404 redirect guess. 
-		 * 
+		/**
+		 * Filter if we want to remove the 404 redirect guess.
+		 *
 		 * @param bool $prevent_guess Prevent the guess or not.
 		 */
-		if ( is_404() && apply_filters( 'mu_prevent_wordpress_url_guess_redirect', true) ) {
+		if ( is_404() && apply_filters( 'mu_prevent_wordpress_url_guess_redirect', true ) ) {
 			return false;
 		}
 		return $redirect_url;
