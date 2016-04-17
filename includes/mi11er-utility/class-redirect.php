@@ -72,9 +72,9 @@ class Redirect implements Plugin_Interface
 	public function template_redirect_action() {
 		global $wpdb;
 
-		//if ( ! is_404() ) {
-			//return;
-		//}
+		if ( ! is_404() ) {
+			return;
+		}
 
 		$request_url = TT::get_the_request_url();
 		if ( null === $request_url ) {
@@ -84,16 +84,19 @@ class Redirect implements Plugin_Interface
 		$request_path = trim( $request_url['path'], '/' ); // Remove leading and trailing slashes.
 
 		$cache_key = md5( $request_path );
-		if (false === $link = wp_cache_get( $cache_key, self::CACHE_GROUP ) ) {
-			$args = [
-				'meta_query' => [[
-					'key' => self::META_FIELD,
-					'value' => $request_path,
-				]],
-				'posts_per_page' => 1,
-			];
-			$posts = get_posts( $args );
-			if (count( $posts ) === 1 ){
+		if ( false === $link = wp_cache_get( $cache_key, self::CACHE_GROUP ) ) {
+			$id = (int) $wpdb->get_var( $wpdb->prepare(
+				"
+					SELECT post_id
+					FROM $wpdb->postmeta
+					WHERE ( meta_key = %s )
+					  AND ( meta_value = %s )
+				"
+				,self::META_FIELD
+				,$request_path
+			));
+			
+			if ( $id ) {
 				$link = get_permalink( $posts[0]->ID );
 			}
 			wp_cache_set( $cache_key, $link, self::CACHE_GROUP, 5 * MINUTE_IN_SECONDS );
