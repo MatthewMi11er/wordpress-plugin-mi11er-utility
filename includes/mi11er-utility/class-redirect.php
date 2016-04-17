@@ -95,9 +95,9 @@ class Redirect implements Plugin_Interface
 				,self::META_FIELD
 				,$request_path
 			));
-			
+
 			if ( $id ) {
-				$link = get_permalink( $posts[0]->ID );
+				$link = get_permalink( $id );
 			}
 			wp_cache_set( $cache_key, $link, self::CACHE_GROUP, 5 * MINUTE_IN_SECONDS );
 		}
