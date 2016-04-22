@@ -5,9 +5,9 @@
  * @package Mi11er\Utility
  */
 
-namespace Mi11er\Utility;
+namespace Mi11er\Utility\Plugin;
 
-interface Plugin_Interface
+interface Interface
 {
 	/**
 	 * Run whatever is needed for plugin setup
