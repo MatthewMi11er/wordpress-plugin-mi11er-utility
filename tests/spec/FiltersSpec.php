@@ -10,10 +10,17 @@ class FiltersSpec extends ObjectBehavior
 {
 	function let( Wp_Interface $wp ) {
 		$this->beConstructedWith( $wp );
+
 	}
 
 	function it_is_initializable() {
 
 		$this->shouldHaveType( 'Mi11er\Utility\Filters' );
+	}
+
+	function it_registers_filters() {
+		$this->setup();
+		$this->setup();
+		$this->get_registered_filters()->shouldHaveCount( 3 );
 	}
 }

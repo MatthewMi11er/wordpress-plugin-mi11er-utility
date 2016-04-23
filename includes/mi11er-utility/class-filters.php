@@ -14,23 +14,53 @@ class Filters implements Plugin_Interface
 {
 
 	/**
+	 * The Wordpess Interface
+	 *
+	 * @var Wp_Interface $wp
+	 */
+	protected $wp;
+
+	/**
+	 * Registered Filters
+	 *
+	 * @var array $registered_filters
+	 */
+	protected $registered_filters = [];
+
+	/**
 	 * The constructor
 	 *
 	 * @param Wp_Interface $wp Interface to the Wordpress system.
 	 */
 	public function __construct( Wp_Interface $wp ) {
-
+		$this->wp = $wp;
 	}
 
 	/**
 	 * Run whatever is needed for plugin setup
 	 */
 	public function setup() {
-		add_filter( 'https_local_ssl_verify', [ $this, 'https_local_ssl_verify_filter' ], 10, 1 );
-		add_filter( 'is_email',               [ $this, 'is_email_filter' ],               10, 3 );
-		add_filter( 'redirect_canonical',     [ $this, 'redirect_canonical_filter' ],      0, 2 );
+		if ( ! empty( $this->registered_filters ) ) {
+			return;
+		}
+		$this->registered_filters = [
+			[ 'https_local_ssl_verify', [ $this, 'https_local_ssl_verify_filter' ], 10, 1 ],
+			[ 'is_email',               [ $this, 'is_email_filter' ],               10, 3 ],
+			[ 'redirect_canonical',     [ $this, 'redirect_canonical_filter' ],      0, 2 ],
+		];
+		foreach ( $this->registered_filters as $filter ) {
+			call_user_func_array( [ $this->wp, 'add_filter' ],$filter );
+		}
 	}
 
+	/**
+	 * Returns the registered_filters;
+	 *
+	 * @return array
+	 */
+	public function get_registered_filters() {
+		return $this->registered_filters;
+	}
 	/**
 	 * Run whatever is needed for plugin activation.
 	 */
