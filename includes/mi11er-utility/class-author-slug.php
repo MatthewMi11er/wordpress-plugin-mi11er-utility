@@ -19,6 +19,16 @@ namespace Mi11er\Utility;
  */
 class Author_Slug implements Plugin_Interface
 {
+
+	/**
+	 * The constructor
+	 *
+	 * @param Wp_Interface $wp Interface to the Wordpress system.
+	 */
+	public function __construct( Wp_Interface $wp ) {
+
+	}
+
 	/**
 	 * Run whatever is needed for plugin setup
 	 */

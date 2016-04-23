@@ -22,6 +22,16 @@ class Redirect implements Plugin_Interface
 	const META_BOX    = 'mu-old-url-redirect';
 	const CACHE_GROUP = 'mu-old-url-redirect';
 
+
+	/**
+	 * The constructor
+	 *
+	 * @param Wp_Interface $wp Interface to the Wordpress system.
+	 */
+	public function __construct( Wp_Interface $wp ) {
+
+	}
+
 	/**
 	 * Run whatever is needed for plugin setup
 	 */

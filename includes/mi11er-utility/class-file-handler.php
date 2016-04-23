@@ -21,6 +21,15 @@ class File_Handler implements Plugin_Interface
 	protected $_files = [];
 
 	/**
+	 * The constructor
+	 *
+	 * @param Wp_Interface $wp Interface to the Wordpress system.
+	 */
+	public function __construct( Wp_Interface $wp ) {
+
+	}
+
+	/**
 	 * Run whatever is needed for plugin setup
 	 */
 	public function setup() {
