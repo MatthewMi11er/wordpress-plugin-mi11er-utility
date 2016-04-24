@@ -49,7 +49,7 @@ class Filters implements Plugin_Interface
 			[ 'redirect_canonical',     [ $this, 'redirect_canonical_filter' ],      0, 2 ],
 		];
 		foreach ( $this->registered_filters as $filter ) {
-			call_user_func_array( [ $this->wp, 'add_filter' ],$filter );
+			call_user_func_array( [ $this->wp, 'add_filter' ], $filter );
 		}
 	}
 
@@ -65,7 +65,7 @@ class Filters implements Plugin_Interface
 	 * Run whatever is needed for plugin activation.
 	 */
 	public function activate() {
-		return;
+		return true;
 	}
 
 	/**
@@ -75,8 +75,8 @@ class Filters implements Plugin_Interface
 	 * @return boolean False when in development environment.
 	 */
 	public function https_local_ssl_verify_filter( $the_value ) {
-		if ( WP_ENV === 'development' ) {
-			$the_value = false;
+		if ( isset($this->wp) && $this->wp->WP_ENV === 'development' ) {
+			return false;
 		}
 		return $the_value;
 	}

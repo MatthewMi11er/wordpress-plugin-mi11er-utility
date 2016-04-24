@@ -29,6 +29,25 @@ class Wp implements Wp_Interface
 
 		return call_user_func_array( $function, $arguments );
 	}
+
+	/**
+	 * Wrapper around getting the value of constants
+	 * 
+	 * @param string $name The name of the contstant.
+	 */
+	public function __get( $name ){
+			return constant( $name );
+	}
+
+	/**
+	 * Checks if the constant is set
+	 *
+	 * @param string $name The constant to check.
+	 * @return bool
+	 */
+	public function __isset( $name ) {
+		return defined( $name );
+	}
 	/**
 	 * Proxy to the wordpress add_filter function.
 	 */
