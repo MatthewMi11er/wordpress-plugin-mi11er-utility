@@ -16,11 +16,11 @@ class WpSpec extends ObjectBehavior
 		$this->is_int( 1 )->shouldReturn( true );
 		$this->shouldThrow( '\BadFunctionCallException' )->duringnot_a_real_function();
 	}
-	
+
 	function it_should_return_constants() {
-		$this->__isset( 'TEST')->shouldReturn( false );
-		define('TEST',1);
-		$this->__isset( 'TEST')->shouldReturn( true );
-		$this->TEST->shouldReturn(1);
+		$this->__isset( 'TEST' )->shouldReturn( false );
+		define( 'TEST',1 );
+		$this->__isset( 'TEST' )->shouldReturn( true );
+		$this->TEST->shouldReturn( 1 );
 	}
 }

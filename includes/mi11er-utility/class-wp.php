@@ -32,10 +32,10 @@ class Wp implements Wp_Interface
 
 	/**
 	 * Wrapper around getting the value of constants
-	 * 
+	 *
 	 * @param string $name The name of the contstant.
 	 */
-	public function __get( $name ){
+	public function __get( $name ) {
 			return constant( $name );
 	}
 
@@ -52,6 +52,42 @@ class Wp implements Wp_Interface
 	 * Proxy to the wordpress add_filter function.
 	 */
 	public function add_filter() {
+		return $this->__call( __FUNCTION__, func_get_args() );
+	}
+
+	/**
+	 * Proxy to the wordpress apply_filters function.
+	 */
+	public function apply_filters() {
+		return $this->__call( __FUNCTION__, func_get_args() );
+	}
+
+	/**
+	 * Proxy to the wordpress current_time function.
+	 */
+	public function current_time() {
+		return $this->__call( __FUNCTION__, func_get_args() );
+	}
+
+
+	/**
+	 * Proxy to the wordpress is_404 function.
+	 */
+	public function is_404() {
+		return $this->__call( __FUNCTION__, func_get_args() );
+	}
+
+	/**
+	 * Proxy to the wordpress get_post function.
+	 */
+	public function get_post() {
+		return $this->__call( __FUNCTION__, func_get_args() );
+	}
+
+	/**
+	 * Proxy to the wordpress get_post_modified_time function.
+	 */
+	public function get_post_modified_time() {
 		return $this->__call( __FUNCTION__, func_get_args() );
 	}
 }
