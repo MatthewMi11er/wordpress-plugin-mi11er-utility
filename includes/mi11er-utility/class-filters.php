@@ -10,32 +10,8 @@ namespace Mi11er\Utility;
 /**
  * This class provides addtional filters that don't have a better place to live
  */
-class Filters implements Plugin_Interface
+class Filters extends Plugin_Abstract
 {
-
-	/**
-	 * The Wordpess Interface
-	 *
-	 * @var Wp_Interface $wp
-	 */
-	protected $wp;
-
-	/**
-	 * Registered Filters
-	 *
-	 * @var array $registered_filters
-	 */
-	protected $registered_filters = [];
-
-	/**
-	 * The constructor
-	 *
-	 * @param Wp_Interface $wp Interface to the Wordpress system.
-	 */
-	public function __construct( Wp_Interface $wp ) {
-		$this->wp = $wp;
-	}
-
 	/**
 	 * Run whatever is needed for plugin setup
 	 */
@@ -55,21 +31,6 @@ class Filters implements Plugin_Interface
 		foreach ( $this->registered_filters as $filter ) {
 			call_user_func_array( [ $this->wp, 'add_filter' ], $filter );
 		}
-	}
-
-	/**
-	 * Returns the registered_filters;
-	 *
-	 * @return array
-	 */
-	public function get_registered_filters() {
-		return $this->registered_filters;
-	}
-	/**
-	 * Run whatever is needed for plugin activation.
-	 */
-	public function activate() {
-		return true;
 	}
 
 	/**

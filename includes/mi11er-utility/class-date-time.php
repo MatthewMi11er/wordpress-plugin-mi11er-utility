@@ -9,6 +9,10 @@ namespace Mi11er\Utility;
 
 /**
  * Extends the builtin DateTime class with addtional features
+ *
+ * Features:
+ * - AP Style formating
+ *   {@see https://owl.english.purdue.edu/owl/resource/735/02/ }
  */
 class Date_Time extends \DateTime
 {
@@ -67,6 +71,12 @@ class Date_Time extends \DateTime
 	 * @return string
 	 */
 	protected function ap_date() {
+		/**
+		 * The AP Style only allows
+		 * abreviation of some months
+		 * and those that can must be abreaviated a
+		 * certain way.
+		 */
 		$ap_months = [
 			'01' => 'Jan.',
 			'02' => 'Feb.',
@@ -118,6 +128,8 @@ class Date_Time extends \DateTime
 
 	/**
 	 * Return difference between $this and $compare
+	 *
+	 * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
 	 *
 	 * @param Datetime|String $compare The date to compare to.
 	 * @param bool            $absolute Should the interval be forced to be positive.

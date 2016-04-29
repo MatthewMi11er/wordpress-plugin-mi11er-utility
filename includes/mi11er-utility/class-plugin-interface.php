@@ -15,6 +15,7 @@ interface Plugin_Interface
 	 * @param Wp_Interface $wp Interface to the Wordpress system.
 	 */
 	public function __construct( Wp_Interface $wp );
+
 	/**
 	 * Run whatever is needed for plugin setup
 	 */
@@ -24,4 +25,18 @@ interface Plugin_Interface
 	 * Run whatever is needed ofr plugin activation
 	 */
 	public function activate();
+
+	/**
+	 * Returns an array of the actions that were registered.
+	 *
+	 * @return arary
+	 */
+	public function get_registered_actions();
+
+	/**
+	 * Returns an array of the filters that were registered.
+	 *
+	 * @return arary
+	 */
+	public function get_registered_filters();
 }

@@ -17,17 +17,8 @@ namespace Mi11er\Utility;
  *
  * @TODO refactor using more robust methods.
  */
-class Author_Slug implements Plugin_Interface
+class Author_Slug extends Plugin_Abstract
 {
-
-	/**
-	 * The constructor
-	 *
-	 * @param Wp_Interface $wp Interface to the Wordpress system.
-	 */
-	public function __construct( Wp_Interface $wp ) {
-
-	}
 
 	/**
 	 * Run whatever is needed for plugin setup

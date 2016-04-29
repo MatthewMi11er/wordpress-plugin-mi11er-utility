@@ -48,6 +48,14 @@ class Wp implements Wp_Interface
 	public function __isset( $name ) {
 		return defined( $name );
 	}
+
+	/**
+	 * Proxy to the wordpress add_action function.
+	 */
+	public function add_action() {
+		return $this->__call( __FUNCTION__, func_get_args() );
+	}
+
 	/**
 	 * Proxy to the wordpress add_filter function.
 	 */

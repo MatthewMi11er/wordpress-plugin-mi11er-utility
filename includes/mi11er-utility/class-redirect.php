@@ -16,21 +16,12 @@ use Mi11er\Utility\Template_Tags as TT;
  * @todo get settings from DB in addtion to using filters.
  * @todo allow deletion
  */
-class Redirect implements Plugin_Interface
+class Redirect extends Plugin_Abstract
 {
 	const META_FIELD  = '_mu_old_url_redirect';
 	const META_BOX    = 'mu-old-url-redirect';
 	const CACHE_GROUP = 'mu-old-url-redirect';
 
-
-	/**
-	 * The constructor
-	 *
-	 * @param Wp_Interface $wp Interface to the Wordpress system.
-	 */
-	public function __construct( Wp_Interface $wp ) {
-
-	}
 
 	/**
 	 * Run whatever is needed for plugin setup
@@ -45,12 +36,6 @@ class Redirect implements Plugin_Interface
 		add_action( 'template_redirect', [ $this, 'template_redirect_action' ], 0, 0 );
 	}
 
-	/**
-	 * Run whatever is needed for plugin activation
-	 */
-	public function activate() {
-		return;
-	}
 
 	/**
 	 * ================Actions

@@ -11,7 +11,7 @@ namespace Mi11er\Utility;
  * This class provides functions for routing requests that aren't standard posts or
  * custom post types (eg. theme php css handler.)
  */
-class File_Handler implements Plugin_Interface
+class File_Handler extends Plugin_Abstract
 {
 	/**
 	 * List of files that this plugin will handle.
@@ -21,32 +21,30 @@ class File_Handler implements Plugin_Interface
 	protected $_files = [];
 
 	/**
-	 * The constructor
-	 *
-	 * @param Wp_Interface $wp Interface to the Wordpress system.
-	 */
-	public function __construct( Wp_Interface $wp ) {
-
-	}
-
-	/**
 	 * Run whatever is needed for plugin setup
 	 */
 	public function setup() {
 		// Actions.
-		add_action( 'init',                      [ $this, 'init_action' ],                   10 );
+		if ( empty( $this->registered_actions ) ) {
+			$this->registered_actions = [
+				[ 'init',                      [ $this, 'init_action' ],                   10 ],
+			];
+			foreach ( $this->registered_actions as $action ) {
+				call_user_func_array( [ $this->wp, 'add_action' ], $action );
+			}
+		}
 
 		// Filters.
-		add_filter( 'redirect_canonical',        [ $this, 'redirect_canonical_filter' ],     10, 2 );
-		add_filter( 'template_include',          [ $this, 'template_include_filter' ],       10, 1 );
-		add_filter( 'the_posts',                 [ $this, 'the_posts_filter' ],              1,  2 );
-	}
-
-	/**
-	 * Run whatever is needed ofr plugin activation
-	 */
-	public function activate() {
-		return;
+		if ( empty( $this->registered_filters ) ) {
+			$this->registered_filters = [
+				[ 'redirect_canonical',        [ $this, 'redirect_canonical_filter' ],     10, 2 ],
+				[ 'template_include',          [ $this, 'template_include_filter' ],       10, 1 ],
+				[ 'the_posts',                 [ $this, 'the_posts_filter' ],              1,  2 ],
+			];
+			foreach ( $this->registered_filters as $filter ) {
+				call_user_func_array( [ $this->wp, 'add_filter' ], $filter );
+			}
+		}
 	}
 
 	/**

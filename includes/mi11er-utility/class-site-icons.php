@@ -50,7 +50,7 @@ use Mi11er\Utility\Template_Tags as TT;
  *
  * @todo get settings from DB in addtion to using filters.
  */
-class Site_Icons implements Plugin_Interface
+class Site_Icons extends Plugin_Abstract
 {
 	/**
 	 * List of Icons
@@ -88,14 +88,6 @@ class Site_Icons implements Plugin_Interface
 	];
 
 	/**
-	 * The constructor
-	 *
-	 * @param Wp_Interface $wp Interface to the Wordpress system.
-	 */
-	public function __construct( Wp_Interface $wp ) {
-	}
-
-	/**
 	 * Run whatever is needed for plugin setup
 	 */
 	public function setup() {
@@ -118,12 +110,6 @@ class Site_Icons implements Plugin_Interface
 		TT::add_tag( 'the_theme_color',          [ $this, 'the_theme_color' ] );
 	}
 
-	/**
-	 * Run whatever is needed for plugin activation
-	 */
-	public function activate() {
-		return;
-	}
 
 	/**
 	 * ================Actions
