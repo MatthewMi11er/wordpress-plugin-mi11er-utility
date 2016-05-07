@@ -38,7 +38,7 @@ class Date_Time extends \DateTime
 	 * @param string|\DateTimeInterface $compare A date to use for comparing.
 	 */
 	public function __construct( $time = 'now', $timezone = null, $compare = 'now' ) {
-		$this->compare = $compare instanceof \DateTimeInterface ? $compare : new \DateTime( $compare );
+		$this->compare = ( $compare instanceof \DateTimeInterface ) ? $compare : new \DateTime( $compare );
 		parent::__construct( $time, $timezone );
 	}
 
@@ -119,7 +119,7 @@ class Date_Time extends \DateTime
 		$meridian = 'am' === parent::format( 'a' ) ? 'a.m.' : 'p.m.';
 		if ( '00' === $minute ) {
 			if ( '12' === $hour ) {
-				return 'a.m.' === $meridian ? 'midnight' : 'noon';
+				return 'a.m.' === ( $meridian ) ? 'midnight' : 'noon';
 			}
 			return $hour . ' ' . $meridian;
 		}

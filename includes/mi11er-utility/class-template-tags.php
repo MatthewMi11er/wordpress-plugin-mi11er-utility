@@ -144,7 +144,7 @@ class Template_Tags
 	 *                        'http', 'https', or 'relative'. Default null.
 	 */
 	public static function the_home_url( $path = '', $scheme = null ) {
-		echo esc_url( self::home_url( $path, $scheme ) );
+		echo esc_url( $this->home_url( $path, $scheme ) );
 	}
 
 	/**

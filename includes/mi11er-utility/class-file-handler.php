@@ -89,13 +89,12 @@ class File_Handler extends Plugin_Abstract
 	 * Returning false to this filter will cancel the redirect.
 	 *
 	 * @param string $redirect_url  The redirect URL.
-	 * @param string $requested_url The requested URL.
 	 *
 	 * @return bool|string
 	 */
-	public function redirect_canonical_filter( $redirect_url, $requested_url ) {
-		// Check if we're dealing stuff we care about and optionally prevent addtion of trailing slash.
-		if ( false !== $this->get_config() && $this->get_config()['prevent_slash'] ) {
+	public function redirect_canonical_filter( $redirect_url ) {
+		// Check if we're dealing stuff we care about and prevent addtion of trailing slash.
+		if ( false !== $this->get_config() ) {
 			return false;
 		}
 
@@ -170,15 +169,13 @@ class File_Handler extends Plugin_Abstract
 	 * @param string $file          The name of the file to handle.
 	 * @param string $rewrite       The rewrite rule to add for the file.
 	 * @param string $template      The template that should handle the file.
-	 * @param bool   $prevent_slash Whether we should stop rewrite_canonical from adding a slash.
 	 * @param array  $post          Post data (real or imagined) that we want to use to replace wp_query.
 	 */
-	public function add_config( $file, $rewrite, $template, $prevent_slash = true, $post = [] ) {
+	public function add_config( $file, $rewrite, $template, $post = [] ) {
 		$this->_files[] = [
 			'file'          => $file,
 			'rewrite'       => $rewrite,
 			'template'      => $template,
-			'prevent_slash' => $prevent_slash,
 			'post'          => $post,
 		];
 	}

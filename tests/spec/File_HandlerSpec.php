@@ -28,6 +28,6 @@ class File_HandlerSpec extends ObjectBehavior
 	}
 
 	function if_filters_redirect_canonical() {
-		$this->redirect_canonical_filter
+		//$this->redirect_canonical_filter
 	}
 }
