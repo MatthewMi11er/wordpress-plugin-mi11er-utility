@@ -29,7 +29,7 @@ class Filters extends Plugin_Abstract
 			[ 'redirect_canonical',     [ $this, 'redirect_canonical_filter' ],      0, 2 ],
 		];
 		foreach ( $this->registered_filters as $filter ) {
-			call_user_func_array( [ $this->wp, 'add_filter' ], $filter );
+			call_user_func_array( $this->wp_core_namespace . '\add_filter', $filter  );
 		}
 	}
 
@@ -47,13 +47,13 @@ class Filters extends Plugin_Abstract
 			return $the_date;
 		}
 
-		$post = $this->wp->get_post( $post );
+		$post = get_post( $post );
 
 		if ( ! $post ) {
 			return $the_date;
 		}
 
-		$date = new Date_Time( $post->post_date, null, $this->wp->current_time( 'timestamp' ) );
+		$date = new Date_Time( $post->post_date, null, current_time( 'timestamp' ) );
 
 		return $date->format( Date_Time::AP_DATE );
 	}
@@ -71,13 +71,13 @@ class Filters extends Plugin_Abstract
 			return $the_time;
 		}
 
-		$post = $this->wp->get_post( $post );
+		$post = get_post( $post );
 
 		if ( ! $post ) {
 			return $the_time;
 		}
 
-		$time = new Date_Time( $post->post_date, null, $this->wp->current_time( 'timestamp' ) );
+		$time = new Date_Time( $post->post_date, null, current_time( 'timestamp' ) );
 
 		return $time->format( Date_Time::AP_TIME );
 	}
@@ -94,7 +94,7 @@ class Filters extends Plugin_Abstract
 			return $the_date;
 		}
 
-		$date = new Date_Time( $this->wp->get_post_modified_time( 'Y-m-d\TH:i:sP', null, null, true ), null, $this->wp->current_time( 'timestamp' ) );
+		$date = new Date_Time( get_post_modified_time( 'Y-m-d\TH:i:sP', null, null, true ), null, current_time( 'timestamp' ) );
 		return $date->format( Date_Time::AP_DATE );
 	}
 
@@ -110,7 +110,7 @@ class Filters extends Plugin_Abstract
 			return $the_time;
 		}
 
-		$time = new Date_Time( $this->wp->get_post_modified_time( 'Y-m-d\TH:i:sP', null, null, true ), null, $this->wp->current_time( 'timestamp' ) );
+		$time = new Date_Time( get_post_modified_time( 'Y-m-d\TH:i:sP', null, null, true ), null, current_time( 'timestamp' ) );
 		return $time->format( Date_Time::AP_TIME );
 	}
 
@@ -159,7 +159,7 @@ class Filters extends Plugin_Abstract
 		 *
 		 * @param bool $prevent_guess Prevent the guess or not.
 		 */
-		if ( $this->wp->is_404() && $this->wp->apply_filters( 'mu_prevent_wordpress_url_guess_redirect', true ) ) {
+		if ( is_404() && apply_filters( 'mu_prevent_wordpress_url_guess_redirect', true ) ) {
 			return false;
 		}
 		return $redirect_url;

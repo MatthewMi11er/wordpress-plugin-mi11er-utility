@@ -30,7 +30,7 @@ class File_Handler extends Plugin_Abstract
 				[ 'init',                      [ $this, 'init_action' ],                   10 ],
 			];
 			foreach ( $this->registered_actions as $action ) {
-				call_user_func_array( [ $this->wp, 'add_action' ], $action );
+				call_user_func_array( $this->wp_core_namespace . '\add_action', $action );
 			}
 		}
 
@@ -42,7 +42,7 @@ class File_Handler extends Plugin_Abstract
 				[ 'the_posts',                 [ $this, 'the_posts_filter' ],              1,  2 ],
 			];
 			foreach ( $this->registered_filters as $filter ) {
-				call_user_func_array( [ $this->wp, 'add_filter' ], $filter );
+				call_user_func_array( $this->wp_core_namespace . '\add_filter', $filter );
 			}
 		}
 	}

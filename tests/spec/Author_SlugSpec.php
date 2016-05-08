@@ -8,8 +8,8 @@ use Mi11er\Utility\Wp_Interface;
 
 class Author_SlugSpec extends ObjectBehavior
 {
-	function let( Wp_Interface $wp ) {
-		$this->beConstructedWith( $wp );
+	function let() {
+
 	}
 	function it_is_initializable() {
 

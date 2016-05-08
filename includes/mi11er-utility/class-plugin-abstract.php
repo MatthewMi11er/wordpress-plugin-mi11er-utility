@@ -25,21 +25,23 @@ abstract class Plugin_Abstract implements Plugin_Interface
 	 * @var array $registered_actions
 	 */
 	protected $registered_actions = [];
-
+	
 	/**
-	 * The Wordpess Interface
+	 * Namespace for wordpress core functions
+	 * Used for testing callable functions.
 	 *
-	 * @var Wp_Interface $wp
+	 * @var string $wp_core_namepace
 	 */
-	protected $wp;
+	protected $wp_core_namespace = '';
 
 	/**
 	 * The constructor
-	 *
-	 * @param Wp_Interface $wp Interface to the Wordpress system.
 	 */
-	final public function __construct( Wp_Interface $wp ) {
-		$this->wp = $wp;
+	final public function __construct() {
+		if( ! defined( 'ABSPATH' ) ) {
+			$this->wp_core_namespace = __NAMESPACE__;
+		}
+		return;
 	}
 
 	/**

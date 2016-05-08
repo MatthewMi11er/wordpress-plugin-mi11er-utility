@@ -9,7 +9,15 @@ use Mi11er\Utility\Wp_Interface;
 class FiltersSpec extends ObjectBehavior
 {
 	function let( Wp_Interface $wp ) {
-		$this->beConstructedWith( $wp );
+		\spec\Mi11er\Utility\Wp_Mock_Registry::instance($wp)->define('Mi11er\Utility','add_action');
+		\spec\Mi11er\Utility\Wp_Mock_Registry::instance()->define('Mi11er\Utility','add_filter');
+		\spec\Mi11er\Utility\Wp_Mock_Registry::instance()->define('Mi11er\Utility','apply_filters');
+		\spec\Mi11er\Utility\Wp_Mock_Registry::instance()->define('Mi11er\Utility','is_404');
+		\spec\Mi11er\Utility\Wp_Mock_Registry::instance()->define('Mi11er\Utility','get_post_modified_time');
+		\spec\Mi11er\Utility\Wp_Mock_Registry::instance()->define('Mi11er\Utility','current_time');
+		\spec\Mi11er\Utility\Wp_Mock_Registry::instance()->define('Mi11er\Utility','get_post');
+		$wp->add_action(Argument::cetera())->willReturn('test');
+		$wp->add_filter(Argument::cetera())->willReturn('test');
 	}
 
 	function it_is_initializable() {
