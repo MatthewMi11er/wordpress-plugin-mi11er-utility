@@ -29,7 +29,7 @@ class Filters extends Plugin_Abstract
 			[ 'redirect_canonical',     [ $this, 'redirect_canonical_filter' ],      0, 2 ],
 		];
 		foreach ( $this->registered_filters as $filter ) {
-			call_user_func_array( $this->wp_core_namespace . '\add_filter', $filter  );
+			call_user_func_array( $this->wp_core_namespace . '\add_filter', $filter );
 		}
 	}
 
@@ -159,6 +159,7 @@ class Filters extends Plugin_Abstract
 		 *
 		 * @param bool $prevent_guess Prevent the guess or not.
 		 */
+		var_dump( is_404() );
 		if ( is_404() && apply_filters( 'mu_prevent_wordpress_url_guess_redirect', true ) ) {
 			return false;
 		}
