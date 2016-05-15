@@ -11,13 +11,28 @@
 		"php": ">=5.4",
 		"composer/installers":"*"
   },
-	"suggest":{
+	"require-dev":{
 		"whatthejeff/fab-phpunit-resultprinter": "~1.1",
 		"phing/phing": "dev-master",
 		"phpunit/dbunit": "*",
 		"phpunit/phpunit":"~4.8",
 		"phpunit/phpunit-selenium" : "*",
 		"sebastian/phpcpd": "*",
-		"wp-cli/wp-cli":"*"
+		"wp-cli/wp-cli":"*",
+        "phpspec/phpspec": "~2.0",
+        "squizlabs/php_codesniffer": "dev-master",
+        "coduo/phpspec-data-provider-extension":"dev-master",
+        "henrikbjorn/phpspec-code-coverage": "dev-master",
+        "codeclimate/php-test-reporter": "dev-master",
+        "codacy/coverage": "dev-master",
+		"mi11er/mi11er-cs":"*"
+	},
+	"scripts": {
+		"config-set" : [
+			"\"vendor/bin/phpcs\" --config-set installed_paths ../../..,../../../vendor/wp-coding-standards/wpcs,../../../vendor/mi11er/mi11er-cs",
+			"\"vendor/bin/phpcs\" --config-set default_standard mi11er-wp"
+		],
+		"post-install-cmd": "composer config-set",
+		"post-update-cmd": "composer config-set"
 	}
 }
