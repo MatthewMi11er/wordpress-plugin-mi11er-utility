@@ -22,18 +22,14 @@ class Autoloader
 		if ( 0 !== strpos( $classname, __NAMESPACE__ ) ) {
 			return;
 		}
-		// Remove the prefix and the first slash.
-		$classname = substr( $classname, strlen( __NAMESPACE__ ) + 1 );
+		// Remove the prefix.
+		$classname = substr( $classname, strlen( __NAMESPACE__ ) );
 
-		// Split out the namespace parts and classname.
-		$parts = explode( '\\', strtolower( str_replace( '_', '-', $classname ) ) );
+		// Replace backslashes and underscores with DIRECTORY_SEPARATOR and dash. Make lower case.
+		$classname = strtolower( str_replace( '_', '-', str_replace( '\\', DIRECTORY_SEPARATOR, $classname ) ) );
 
-		// Turn the parts into a path relative to this files dir.
-		end( $parts );
-		$key = key( $parts );
-		$parts[ $key ] = 'class-' . $parts[ $key ] . '.php';
-		
-		$path = __DIR__ . DIRECTORY_SEPARATOR . implode( DIRECTORY_SEPARATOR, $parts );
+		// Prefix the file name and round out the path.
+		$classname = __DIR__ . substr_replace( $classname, DIRECTORY_SEPARATOR . 'class-', (int) strrpos( $classname, DIRECTORY_SEPARATOR ), 1 ) . '.php';
 
 		// If the path is a file, we require it becuase it contains the class we want.
 		if ( is_file( $path ) ) {
