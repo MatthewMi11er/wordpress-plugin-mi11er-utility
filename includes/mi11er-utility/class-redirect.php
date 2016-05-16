@@ -94,7 +94,7 @@ class Redirect implements Plugin_Interface
 				"
 				,self::META_FIELD
 				,$request_path
-			)); // Db call ok.
+			)); // WPCS: db call ok.
 
 			if ( $id ) {
 				$link = get_permalink( $id );
