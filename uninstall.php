@@ -1,6 +1,7 @@
 <?php
 /**
  * Fired when the plugin is uninstalled.
+ *
  * @package Mi11er\Utility
  */
 

@@ -16,12 +16,14 @@ final class Mu
 {
 	/**
 	 * Registery
+	 *
 	 * @var array.
 	 */
 	protected $_registery = [];
 
 	/**
 	 * Plugins
+	 *
 	 * @var array.
 	 */
 	protected $_plugins = [

@@ -130,6 +130,7 @@ class Site_Icons implements Plugin_Interface
 		/**
 		 * Since we're over ridding them...
 		 * Remove the default wp-site-icon settings in the Customizer.
+		 *
 		 * @todo print message that this settng is overridden.
 		 */
 		$wp_customize->remove_control( 'site_icon' );
@@ -137,6 +138,7 @@ class Site_Icons implements Plugin_Interface
 
 	/**
 	 * Callback for the `mu_file_handler` action hook
+	 *
 	 * @param Mi11er\Utility\File_Handler $file_handler The file handler object.
 	 */
 	public function mu_file_handler_action( $file_handler ) {
@@ -147,6 +149,7 @@ class Site_Icons implements Plugin_Interface
 
 	/**
 	 * Callback for the `wp_head` action hook
+	 *
 	 * @see wp_head()
 	 */
 	public function wp_head_action() {
@@ -161,6 +164,7 @@ class Site_Icons implements Plugin_Interface
 	/**
 	 * Callback for the `option_site_icon` filer hook
 	 * Turns the built in site_icon option setting to prevent it from interfearing with this plugin.
+	 *
 	 * @param mixed $value Value of the option.
 	 * @return int 0
 	 */
@@ -237,6 +241,7 @@ class Site_Icons implements Plugin_Interface
 	public function get_the_site_name() {
 		/**
 		 * Filter the site name
+		 *
 		 * @param string The site name.
 		 */
 		return apply_filters( 'mu_site_icons_site_name', get_bloginfo( 'name' ) );
@@ -248,6 +253,7 @@ class Site_Icons implements Plugin_Interface
 	public function the_application_tooltip() {
 		/**
 		 * Filters the application tooltip
+		 *
 		 * @param string The application tooltip.
 		 */
 		echo esc_attr( apply_filters( 'mu_site_icons_application_tooltip', get_bloginfo( 'description' ) ) );
@@ -259,6 +265,7 @@ class Site_Icons implements Plugin_Interface
 	public function the_site_icon_tile_color() {
 		/**
 		 * Filter the icon tile color
+		 *
 		 * @param string The icon color.
 		 */
 		echo esc_attr( apply_filters( 'mu_site_icons_tile_color', '#ffffff' ) );

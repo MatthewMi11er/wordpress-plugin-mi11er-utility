@@ -14,6 +14,7 @@ class Template_Tags
 {
 	/**
 	 * Tags that have been added
+	 *
 	 * @var array
 	 */
 	protected static $_tags = [];
@@ -59,6 +60,7 @@ class Template_Tags
 
 	/**
 	 * Get the plugin teplate directory
+	 *
 	 * @return string
 	 */
 	public static function get_mu_template_directory() {
