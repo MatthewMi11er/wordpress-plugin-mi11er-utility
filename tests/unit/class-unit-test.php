@@ -1,6 +1,7 @@
 <?php
 /**
  * Basic Tests
+ *
  * @package Mi11er\Utility\Tests
  */
 

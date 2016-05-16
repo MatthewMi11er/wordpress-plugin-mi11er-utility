@@ -1,6 +1,7 @@
 <?php
 /**
  * PHPUnit Bootstrap file.
+ *
  * @package Mi11er\Utility\Tests
  */
 

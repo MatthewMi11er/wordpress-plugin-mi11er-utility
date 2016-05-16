@@ -3,11 +3,12 @@
   <description>The coding standard for my wordpress plugins and themes. Based on the WordPress-Coding-Standards</description>
   
   <file>./</file>
-  <exclude-pattern>.build/*</exclude-pattern>
+  <exclude-pattern>build/*</exclude-pattern>
   <exclude-pattern>.git/*</exclude-pattern>
   <exclude-pattern>vendor/*</exclude-pattern>
   
-  <rule ref="WordPress" /> 
+  <rule ref="mi11er-wp" /> 
+
   <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
   <rule ref='PEAR.Classes.ClassDeclaration.OpenBraceNewLine' />
   <rule ref='Squiz.Commenting.FunctionComment.Missing'>

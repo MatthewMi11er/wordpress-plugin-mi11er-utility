@@ -1,6 +1,7 @@
 <?php
 /**
  * Format wordpess post dates and times to AP_STYLE
+ *
  * @package    Mi11er_Utility
  */
 
@@ -69,6 +70,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Determine the month and return the AP Style abbreviation
+	 *
 	 * @param string $m The month string.
 	 */
 	protected function _month_string( $m ) {
@@ -115,6 +117,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Determine whether the date is within the current year and return it
+	 *
 	 * @param string $y The year string.
 	 */
 	protected function _year_string( $y ) {
@@ -127,6 +130,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Determine Capitalization
+	 *
 	 * @param string $the_value The value to check.
 	 */
 	protected function _capitalization( $the_value ) {
@@ -139,6 +143,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Format the date
+	 *
 	 * @param string $the_date The date to format.
 	 */
 	protected function _format_date( $the_date ) {
@@ -159,6 +164,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Format the time
+	 *
 	 * @param string $the_time The time to format.
 	 */
 	protected function _format_time( $the_time ) {
@@ -189,6 +195,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Get the date of the post
+	 *
 	 * @param string  $the_date The date of the post.
 	 * @param string  $d The date format.
 	 * @param WP_POST $post The current post.
@@ -210,6 +217,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Get the time of the post
+	 *
 	 * @param string  $the_time The time of the post.
 	 * @param string  $d The time format.
 	 * @param WP_POST $post The current post.
@@ -231,6 +239,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Get the modified date of the post
+	 *
 	 * @param string $the_date The date to filter.
 	 * @param string $d The date format.
 	 */

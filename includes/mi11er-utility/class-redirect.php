@@ -47,6 +47,7 @@ class Redirect implements Plugin_Interface
 
 	/**
 	 * Add the OLD URL Meta Box to all post types.
+	 *
 	 * @param string  $post_type Post type.
 	 * @param WP_Post $post      Post object.
 	 */
