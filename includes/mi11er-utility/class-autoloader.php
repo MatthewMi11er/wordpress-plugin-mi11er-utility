@@ -22,6 +22,7 @@ class Autoloader
 		if ( 0 !== strpos( $classname, __NAMESPACE__ ) ) {
 			return;
 		}
+
 		// Remove the prefix.
 		$classname = substr( $classname, strlen( __NAMESPACE__ ) );
 

@@ -221,7 +221,7 @@ class Site_Icons implements Plugin_Interface
 	 * @return string
 	 */
 	public function get_the_site_icon_url( $icon_name ) {
-		if ( ! in_array( $icon_name , $this->_icons ) ) {
+		if ( ! in_array( $icon_name , $this->_icons, true ) ) {
 			throw new \UnexpectedValueException( $icon_name . ' is not a known Icon' );
 		}
 		$query_string = '';
