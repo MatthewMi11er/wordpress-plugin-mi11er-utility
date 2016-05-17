@@ -12,7 +12,6 @@ namespace Mi11er\Utility;
  */
 class Filters implements Plugin_Interface
 {
-
 	/**
 	 * Run whatever is needed for plugin setup
 	 */

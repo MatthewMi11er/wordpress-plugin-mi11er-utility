@@ -20,7 +20,7 @@ class Autoloader
 	public static function autoloader( $classname ) {
 		// We only do stuff for our namespace.
 		if ( 0 !== strpos( $classname, __NAMESPACE__ ) ) {
-			return;
+			return false;
 		}
 
 		// Remove the prefix.
@@ -33,9 +33,11 @@ class Autoloader
 		$classname = __DIR__ . substr_replace( $classname, DIRECTORY_SEPARATOR . 'class-', (int) strrpos( $classname, DIRECTORY_SEPARATOR ), 1 ) . '.php';
 
 		// If the path is a file, we require it becuase it contains the class we want.
-		if ( is_file( $path ) ) {
-			require_once $path;
+		if ( is_file( $classname ) ) {
+			require_once $classname;
+			return true;
 		}
+		return false;
 	}
 }
 

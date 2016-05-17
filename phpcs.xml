@@ -27,5 +27,4 @@
   <rule ref="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar">
      <exclude-pattern>tests/*</exclude-pattern>
    </rule>
-
 </ruleset>

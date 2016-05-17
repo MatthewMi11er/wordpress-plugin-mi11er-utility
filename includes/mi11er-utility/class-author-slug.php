@@ -19,7 +19,6 @@ namespace Mi11er\Utility;
  */
 class Author_Slug implements Plugin_Interface
 {
-
 	/**
 	 * Run whatever is needed for plugin setup
 	 */

@@ -18,9 +18,10 @@ use Mi11er\Utility\Template_Tags as TT;
  */
 class Redirect implements Plugin_Interface
 {
-	const META_FIELD   = '_mu_old_url_redirect';
-	const META_BOX     = 'mu-old-url-redirect';
-	const CACHE_GROUP  = 'mu-old-url-redirect';
+	const META_FIELD  = '_mu_old_url_redirect';
+	const META_BOX    = 'mu-old-url-redirect';
+	const CACHE_GROUP = 'mu-old-url-redirect';
+
 	/**
 	 * Run whatever is needed for plugin setup
 	 */
