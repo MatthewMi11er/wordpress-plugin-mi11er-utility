@@ -1,0 +1,20 @@
+# Help keep clean line endings
+* text=auto
+
+##################################
+# Files not needed in production
+##################################
+
+tests export-ignore
+.codeclimate.yml export-ignore
+.csslintrc export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+.travis.yml export-ignore
+build.xml export-ignore
+notes.md export-ignore
+phpcs.xml export-ignore
+phpspec.yml export-ignore
+phpunit.xml export-ignore
+README.md export-ignore
+VERSION export-ignore
