@@ -1,0 +1,24 @@
+cache:
+  paths:
+  - vendor/
+
+before_script:
+  - echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short_open_tag.ini
+  - apt-get update -yqq
+  - apt-get install git zip unzip -yqq
+  - curl -sS https://getcomposer.org/installer | php
+  - php composer.phar self-update --no-interaction
+  - php composer.phar install --prefer-dist --no-interaction --dev
+
+test:7:
+  image: php:7
+  script:
+    - vendor/bin/phpcs
+    - vendor/bin/phpcs --standard=tests/phpcs.xml
+
+test:5.6:
+  image: php:5.6
+  script:
+    - vendor/bin/phpcs
+    - vendor/bin/phpcs --standard=tests/phpcs.xml
+

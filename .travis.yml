@@ -22,8 +22,9 @@ before_script:
 
 
 script:
+  - vendor/bin/phpcs
+  - vendor/bin/phpcs --standard=tests/phpcs.xml
   - if [[ "$PHPDBG" == "0" ]]; then vendor/bin/phpspec run -v --no-interaction; fi
   - if [[ "$PHPDBG" == "1" ]]; then phpdbg -qrr vendor/bin/phpspec run -v --no-interaction; fi
-  - vendor/bin/phpcs
   - vendor/bin/test-reporter
   - vendor/bin/codacycoverage clover
