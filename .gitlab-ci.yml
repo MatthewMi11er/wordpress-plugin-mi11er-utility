@@ -2,24 +2,56 @@ cache:
   paths:
   - vendor/
 
+variables:
+  WP_TEST_DIR: "/tmp/wordpress"
+  WP_VERSION: "4.5"
+  PLUGIN_NAME: "mi11er-utility"
+  MYSQL_DATABASE: wordpress_tests
+  MYSQL_ROOT_PASSWORD: "i am unguessable"
+
+services:
+  - mariadb:latest
+
 before_script:
-  - echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short_open_tag.ini
   - apt-get update -yqq
   - apt-get install git zip unzip -yqq
+  - docker-php-ext-install mysqli
+  - command -v phpdbg >/dev/null 2>&1 || pecl install xdebug 
+  - command -v phpdbg >/dev/null 2>&1 || echo "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20131226/xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini
+  - command -v phpdbg >/dev/null 2>&1 || echo "date.timezone = America/New_York" > /usr/local/etc/php/conf.d/timezone.ini
+  - echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short_open_tag.ini
   - curl -sS https://getcomposer.org/installer | php
   - php composer.phar self-update --no-interaction
-  - php composer.phar install --prefer-dist --no-interaction --dev
+  - php composer.phar install --prefer-dist --no-interaction
+  - git clone --depth=1 --branch="$WP_VERSION" git://develop.git.wordpress.org/ "$WP_TEST_DIR"
+  - PROJECT_DIR=$(basename $(pwd))
+  - cd ..
+  - cp -r "$PROJECT_DIR" "$WP_TEST_DIR/src/wp-content/plugins/$PLUGIN_NAME"
+  - cd "$WP_TEST_DIR"
+  - cp wp-tests-config-sample.php wp-tests-config.php
+  - sed -i "s/youremptytestdbnamehere/$MYSQL_DATABASE/" wp-tests-config.php
+  - sed -i "s/yourusernamehere/root/" wp-tests-config.php
+  - sed -i "s/yourpasswordhere/$MYSQL_ROOT_PASSWORD/" wp-tests-config.php
+  - sed -i "s/localhost/mariadb/" wp-tests-config.php
+  - cd "$WP_TEST_DIR/src/wp-content/plugins/$PLUGIN_NAME"
+  - mkdir -p build/logs
 
 test:7:
   image: php:7
   script:
+    - find -L .  \( -path ./build -o  -path ./vendor \) -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l;
     - vendor/bin/phpcs
     - vendor/bin/phpcs --standard=tests/phpcs.xml
     - phpdbg -qrr vendor/bin/phpspec run -v --no-interaction;
+    - phpdbg -qrr vendor/bin/phpunit
+    - phpdbg -qrr vendor/bin/phpcov merge --clover build/logs/clover.xml build/logs
 
 test:5.6:
   image: php:5.6
   script:
+    - find -L .  \( -path ./build -o  -path ./vendor \) -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l;
     - vendor/bin/phpcs
     - vendor/bin/phpcs --standard=tests/phpcs.xml
     - vendor/bin/phpspec run -v --no-interaction
+    - vendor/bin/phpunit
+    - vendor/bin/phpcov merge --clover build/logs/clover.xml build/logs
