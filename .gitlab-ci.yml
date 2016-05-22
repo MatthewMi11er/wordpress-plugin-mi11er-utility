@@ -15,10 +15,11 @@ test:7:
   script:
     - vendor/bin/phpcs
     - vendor/bin/phpcs --standard=tests/phpcs.xml
+    - phpdbg -qrr vendor/bin/phpspec run -v --no-interaction;
 
 test:5.6:
   image: php:5.6
   script:
     - vendor/bin/phpcs
     - vendor/bin/phpcs --standard=tests/phpcs.xml
-
+    - vendor/bin/phpspec run -v --no-interaction
