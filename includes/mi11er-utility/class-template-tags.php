@@ -74,7 +74,7 @@ class Template_Tags
 	 */
 	public static function get_the_request_url() {
 		// Deterimine if wordpress root is in a subdir.
-		$home_path = parse_url( home_url(), PHP_URL_PATH );
+		$home_path = wp_parse_url( home_url() )['path'];
 		if ( ! is_string( $home_path ) ) {
 			$home_path = '/';
 		} else if ( '/' !== $home_path ) {
@@ -88,7 +88,7 @@ class Template_Tags
 			return null;
 		}
 
-		return parse_url( home_url( preg_replace( '~^' . preg_quote( $home_path, '~' ) . '~', '', $request_uri ) ) );
+		return wp_parse_url( home_url( preg_replace( '~^' . preg_quote( $home_path, '~' ) . '~', '', $request_uri ) ) );
 	}
 
 	/**
@@ -123,7 +123,7 @@ class Template_Tags
 		if ( ! empty( $path ) ) {
 			return $home_url;
 		}
-		$home_path = parse_url( $home_url, PHP_URL_PATH );
+		$home_path = wp_parse_url( $home_url )['path'];
 		if ( '/' === $home_path ) { // Home at site root, already slashed.
 			return $home_url;
 		}

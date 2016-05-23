@@ -1,39 +1,40 @@
 {
-    "name": "mi11er/mi11er-utility",
+    "name": "mi11er/wp-mi11er-utility",
     "type": "wordpress-plugin",
     "description": "",
+    "license": "MIT",
+    "authors": [
+        {
+            "name":  "Matthew Miller",
+            "email": "matthew@mi11er.net"
+        }
+    ],
     "repositories": [
         {
             "type": "composer",
-            "url": "https://wpackagist.org"
+            "url":  "https://wpackagist.org"
         }
     ],
     "require": {
-        "php": ">=5.4",
-        "composer/installers":"*"
-  },
+        "php":                 ">=5.6",
+        "composer/installers": "~1.0"
+    },
     "require-dev":{
-        "whatthejeff/fab-phpunit-resultprinter": "~1.1",
-        "phing/phing": "dev-master",
-        "phpunit/dbunit": "*",
-        "phpunit/phpunit":"~4.8",
-        "phpunit/phpunit-selenium" : "*",
-        "sebastian/phpcpd": "*",
-        "wp-cli/wp-cli":"*",
-        "phpspec/phpspec": "~2.0",
-        "squizlabs/php_codesniffer": "dev-master",
-        "coduo/phpspec-data-provider-extension":"dev-master",
         "henrikbjorn/phpspec-code-coverage": "dev-master",
-        "codeclimate/php-test-reporter": "dev-master",
-        "codacy/coverage": "dev-master",
-        "mi11er/mi11er-cs":"*"
+        "mi11er/mi11er-cs":                  "dev-master",
+        "phpspec/phpspec":                   "~2.0",
+        "phpunit/phpunit":                   "~5.0",
+        "phpunit/phpcov":                    "dev-master"
+    },
+    "autoload": {
+        "classmap": ["includes/"]
     },
     "scripts": {
         "config-set" : [
             "\"vendor/bin/phpcs\" --config-set installed_paths ../../..,../../../vendor/wp-coding-standards/wpcs,../../../vendor/mi11er/mi11er-cs",
             "\"vendor/bin/phpcs\" --config-set default_standard mi11er-wp"
         ],
-        "post-install-cmd": "composer config-set",
-        "post-update-cmd": "composer config-set"
+        "post-install-cmd": "@config-set",
+        "post-update-cmd": "@config-set"
     }
 }

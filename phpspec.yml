@@ -1,21 +1,22 @@
 formatter.name: pretty
 suites:
     todo_suite:
-        namespace: Mi11er\Utility
-        spec_path: tests
+        namespace:   Mi11er\Utility
+        spec_path:   tests
         psr4_prefix: Mi11er\Utility
+        src_path:    includes/mi11er-utility
 extensions:
     - PhpSpec\Extension\CodeCoverageExtension
 code_coverage:
   format:
     - html
-    - clover
+    - php
   output:
-    html: build/coverage
-    clover: build/logs/clover.xml
+    html: build/phpspec-coverage
+    php:  build/logs/phpspec.cov
   whitelist:
     - ./
   blacklist:
     - tests
     - vendor
-bootstrap: tests/spec/bootstrap.php
+    - build

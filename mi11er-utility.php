@@ -13,18 +13,19 @@
  * @package Mi11er\Utility
  */
 
-// In case someone integrates this plugin in a theme or calling this directly.
-if ( ! defined( 'ABSPATH' ) || class_exists( 'Mi11er\Utility\Mu' ) ) {
+namespace Mi11er\Utility;
+
+// Bail if this file is not called by Wordpress.
+if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-// Initialize the composer autoloader. Only used in testing.
-if ( is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) ) {
+/**
+ * If an autoloader isn't already setup, we need to do it.
+ */
+if ( ! class_exists( 'Mi11er\Utility\Mu' ) && is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) ) {
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 }
-
-// Initialize the plugin Autoloader.
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'mi11er-utility' . DIRECTORY_SEPARATOR . 'class-autoloader.php';
 
 /**
  * Return the plugin contoler
@@ -33,8 +34,8 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 
  * @return Mi11er\Utility\Mu
  */
 function mu() {
-	return Mi11er\Utility\Mu::instance();
+	return Mu::instance();
 }
 
 // This seems like a good time to kick things off.
-$GLOBALS['mu'] = mu();
+$GLOBALS['mi11er-utility'] = mu();
