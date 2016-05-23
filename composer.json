@@ -20,6 +20,8 @@
         "composer/installers": "~1.0"
     },
     "require-dev":{
+        "codeclimate/php-test-reporter":     "dev-master",
+        "codacy/coverage":                   "dev-master",
         "henrikbjorn/phpspec-code-coverage": "dev-master",
         "mi11er/mi11er-cs":                  "dev-master",
         "phpspec/phpspec":                   "~2.0",

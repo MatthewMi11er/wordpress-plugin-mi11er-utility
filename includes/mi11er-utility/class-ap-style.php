@@ -136,9 +136,8 @@ class Ap_Style implements Plugin_Interface
 		// Determine whether the date is the current date and set the final output.
 		if ( date( self::DATE_FORMAT ) === $the_date && self::USE_TODAY ) {
 			return $this->_capitalization( 'today' );
-		} else {
-			return $month . ' ' . $date_parts[2] . $year;
 		}
+		return $month . ' ' . $date_parts[2] . $year;
 	}
 
 	/**

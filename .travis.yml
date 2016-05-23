@@ -48,9 +48,9 @@ script:
   - vendor/bin/phpcs --standard=tests/phpcs.xml
   - ${PHPDBG} vendor/bin/phpspec run -v --no-interaction
   - ${PHPDBG} vendor/bin/phpunit
+
+after_success:
   - if [[ "$COVERAGE" == "1" ]]; then ${PHPDBG} vendor/bin/phpcov merge --clover build/logs/clover.xml build/logs; fi
   - if [[ "$COVERAGE" == "1" ]]; then vendor/bin/test-reporter; fi
   - if [[ "$COVERAGE" == "1" ]]; then vendor/bin/codacycoverage clover; fi
-  
-  
 
