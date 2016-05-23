@@ -19,7 +19,6 @@ namespace Mi11er\Utility;
  */
 class Author_Slug implements Plugin_Interface
 {
-
 	/**
 	 * Run whatever is needed for plugin setup
 	 */
@@ -58,10 +57,6 @@ class Author_Slug implements Plugin_Interface
 	 * @return string
 	 */
 	public function pre_user_nicename_filter( $user_nicename ) {
-		if ( isset( $_REQUEST['display_name'] ) ) {
-			$user_nicename = sanitize_title( wp_unslash( $_REQUEST['display_name'] ) );
-		}
-
-		return $user_nicename;
+		return isset( $_REQUEST['display_name'] ) ? sanitize_title( wp_unslash( $_REQUEST['display_name'] ) ) : $user_nicename; // WPCS: input var ok.
 	}
 }

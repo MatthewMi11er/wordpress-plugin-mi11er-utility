@@ -14,6 +14,7 @@ class Template_Tags
 {
 	/**
 	 * Tags that have been added
+	 *
 	 * @var array
 	 */
 	protected static $_tags = [];
@@ -59,6 +60,7 @@ class Template_Tags
 
 	/**
 	 * Get the plugin teplate directory
+	 *
 	 * @return string
 	 */
 	public static function get_mu_template_directory() {
@@ -72,7 +74,7 @@ class Template_Tags
 	 */
 	public static function get_the_request_url() {
 		// Deterimine if wordpress root is in a subdir.
-		$home_path = parse_url( home_url(), PHP_URL_PATH );
+		$home_path = wp_parse_url( home_url() )['path'];
 		if ( ! is_string( $home_path ) ) {
 			$home_path = '/';
 		} else if ( '/' !== $home_path ) {
@@ -86,7 +88,7 @@ class Template_Tags
 			return null;
 		}
 
-		return parse_url( home_url( preg_replace( '~^' . preg_quote( $home_path, '~' ) . '~', '', $request_uri ) ) );
+		return wp_parse_url( home_url( preg_replace( '~^' . preg_quote( $home_path, '~' ) . '~', '', $request_uri ) ) );
 	}
 
 	/**
@@ -121,7 +123,7 @@ class Template_Tags
 		if ( ! empty( $path ) ) {
 			return $home_url;
 		}
-		$home_path = parse_url( $home_url, PHP_URL_PATH );
+		$home_path = wp_parse_url( $home_url )['path'];
 		if ( '/' === $home_path ) { // Home at site root, already slashed.
 			return $home_url;
 		}
@@ -182,16 +184,16 @@ class Template_Tags
 		/**
 		 * These are words that generally should not be capitalized in the title.
 		 */
-		$smallWords = '/^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/iu';
+		$small_words = '/^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|vs?\.?|via)$/iu';
 
-		$title_cased = preg_replace_callback('/[A-Za-z0-9\xC0-\xFF]+[^\s-]*/u', function( $matches ) use ( $title, $smallWords ) {
+		$title_cased = preg_replace_callback('/[A-Za-z0-9\xC0-\xFF]+[^\s-]*/u', function( $matches ) use ( $title, $small_words ) {
 			static $start_at = 0;
 			// Find where the match starts in our $title.
 			$offset = mb_strpos( $title, $matches[0], $start_at, 'UTF-8' );
 			// Move the pointer for the next match.
 			$start_at = $offset + mb_strlen( $matches[0],'UTF-8' );
 			if ( $offset > 0 && $offset + mb_strlen( $matches[0], 'UTF-8' ) !== mb_strlen( $title, 'UTF-8' )
-				&& preg_match( $smallWords, $matches[0] ) && ( $offset - 2 < 0 || mb_substr( $title, $offset - 2, 1 , 'UTF-8' ) !== ':' )
+				&& preg_match( $small_words, $matches[0] ) && ( $offset - 2 < 0 || mb_substr( $title, $offset - 2, 1 , 'UTF-8' ) !== ':' )
 				&& ( mb_substr( $title, $offset + mb_strlen( $matches[0], 'UTF-8' ), 1 ) !== '-'
 					|| $offset - 1 < 0 || mb_substr( $title, $offset - 1, 1, 'UTF-8' ) === '-' )
 				&& ( $offset - 1 < 0 || ! preg_match( '/[^\s-]/', mb_substr( $title, $offset - 1, 1, 'UTF-8' ) ) ) ) {

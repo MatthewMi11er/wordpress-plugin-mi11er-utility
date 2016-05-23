@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="mi11er-utility-test">
+  <description>The coding standard for mi11er-utility tests.</description>
+  
+  <file>./</file>
+  
+  <rule ref="PSR2" >
+    <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
+    <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
+  </rule>
+</ruleset>

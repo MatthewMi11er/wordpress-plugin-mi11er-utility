@@ -16,12 +16,14 @@ final class Mu
 {
 	/**
 	 * Registery
+	 *
 	 * @var array.
 	 */
 	protected $_registery = [];
 
 	/**
 	 * Plugins
+	 *
 	 * @var array.
 	 */
 	protected $_plugins = [
@@ -132,7 +134,7 @@ final class Mu
 		}
 
 		$plugin = ucwords( substr( $key, 7 ), '_' );
-		if ( in_array( $plugin, $this->_plugins ) && apply_filters( 'mu_enable_' . $plugin, true ) ) {
+		if ( in_array( $plugin, $this->_plugins, true ) && apply_filters( 'mu_enable_' . $plugin, true ) ) {
 			$plugin_class = __NAMESPACE__ . '\\' . $plugin;
 			return new $plugin_class;
 		}

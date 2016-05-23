@@ -1,13 +1,23 @@
 language: php
 
 sudo: false
+env:
+  global:
+    - WP_TEST_DIR="/tmp/wordpress"
+    - WP_VERSION="4.5"
+    - PLUGIN_NAME="mi11er-utility"
+    - MYSQL_DATABASE=wordpress_tests
+
+services:
+  - mysql
 
 matrix:
   include:
     - php: 5.6
-      env: PHPDBG=0
+      env: PHPDBG=""
     - php: 7.0
-      env: PHPDBG=1
+      env: PHPDBG="phpdbg -qrr" COVERAGE=1
+      
 
 cache:
   directories:
@@ -18,12 +28,29 @@ before_script:
   - if [[ "$PHPDBG" == "1" ]]; then phpenv config-rm xdebug.ini; fi
   - composer self-update --no-interaction
   - composer install --prefer-dist --no-interaction --dev
-
+  - git clone --depth=1 --branch="$WP_VERSION" git://develop.git.wordpress.org/ "$WP_TEST_DIR"
+  - PROJECT_DIR=$(basename $(pwd))
+  - cd ..
+  - cp -r "$PROJECT_DIR" "$WP_TEST_DIR/src/wp-content/plugins/$PLUGIN_NAME"
+  - cd "$WP_TEST_DIR"
+  - cp wp-tests-config-sample.php wp-tests-config.php
+  - sed -i "s/youremptytestdbnamehere/$MYSQL_DATABASE/" wp-tests-config.php
+  - sed -i "s/yourusernamehere/travis/" wp-tests-config.php
+  - sed -i "s/yourpasswordhere//" wp-tests-config.php
+  - cd "$WP_TEST_DIR/src/wp-content/plugins/$PLUGIN_NAME"
+  - mkdir -p build/logs
+  - mysql -e "CREATE DATABASE $MYSQL_DATABASE;" -uroot
 
 
 script:
-  - if [[ "$PHPDBG" == "0" ]]; then vendor/bin/phpspec run -v --no-interaction; fi
-  - if [[ "$PHPDBG" == "1" ]]; then phpdbg -qrr vendor/bin/phpspec run -v --no-interaction; fi
+  - find -L .  \( -path ./build -o  -path ./vendor \) -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l;
   - vendor/bin/phpcs
-  - vendor/bin/test-reporter
-  - vendor/bin/codacycoverage clover
+  - vendor/bin/phpcs --standard=tests/phpcs.xml
+  - ${PHPDBG} vendor/bin/phpspec run -v --no-interaction
+  - ${PHPDBG} vendor/bin/phpunit
+  - if [[ "$COVERAGE" == "1" ]]; then ${PHPDBG} vendor/bin/phpcov merge --clover build/logs/clover.xml build/logs; fi
+  - if [[ "$COVERAGE" == "1" ]]; then vendor/bin/test-reporter; fi
+  - if [[ "$COVERAGE" == "1" ]]; then vendor/bin/codacycoverage clover; fi
+  
+  
+

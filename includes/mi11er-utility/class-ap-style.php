@@ -1,6 +1,7 @@
 <?php
 /**
  * Format wordpess post dates and times to AP_STYLE
+ *
  * @package    Mi11er_Utility
  */
 
@@ -11,7 +12,7 @@ namespace Mi11er\Utility;
  * to the AP Style Guid.
  * Ref: https://wordpress.org/plugins/ap-style-dates-and-times/
  */
-class AP_Style implements Plugin_Interface
+class Ap_Style implements Plugin_Interface
 {
 
 	/**
@@ -69,52 +70,33 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Determine the month and return the AP Style abbreviation
+	 *
 	 * @param string $m The month string.
 	 */
 	protected function _month_string( $m ) {
-
-		switch ( $m ) {
-			case '01' :
-				return 'Jan.';
-				break;
-			case '02' :
-				return'Feb.';
-				break;
-			case '03' :
-				return 'March';
-				break;
-			case '04' :
-				return 'April';
-				break;
-			case '05' :
-				return 'May';
-				break;
-			case '06' :
-				return 'June';
-				break;
-			case '07' :
-				return 'July';
-				break;
-			case '08' :
-				return 'Aug.';
-				break;
-			case '09' :
-				return 'Sept.';
-				break;
-			case '10' :
-				return 'Oct.';
-				break;
-			case '11' :
-				return 'Nov.';
-				break;
-			case '12' :
-				return 'Dec.';
-				break;
+		$ap_months = [
+			'01' => 'Jan.',
+			'02' => 'Feb.',
+			'03' => 'March',
+			'04' => 'April',
+			'05' => 'May',
+			'06' => 'June',
+			'07' => 'July',
+			'08' => 'Aug.',
+			'09' => 'Sept.',
+			'10' => 'Oct.',
+			'11' => 'Nov.',
+			'12' => 'Dec.',
+		];
+		if ( ! array_key_exists( $m, $ap_months ) ) {
+			$m = '01';
 		}
+		return $ap_months[ $m ];
 	}
 
 	/**
 	 * Determine whether the date is within the current year and return it
+	 *
 	 * @param string $y The year string.
 	 */
 	protected function _year_string( $y ) {
@@ -127,6 +109,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Determine Capitalization
+	 *
 	 * @param string $the_value The value to check.
 	 */
 	protected function _capitalization( $the_value ) {
@@ -139,6 +122,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Format the date
+	 *
 	 * @param string $the_date The date to format.
 	 */
 	protected function _format_date( $the_date ) {
@@ -147,7 +131,7 @@ class AP_Style implements Plugin_Interface
 
 		$month = $this->_month_string( $date_parts[1] );
 		$year = $this->_year_string( $date_parts[0] );
-		$year = '' === $year ? '' : ', ' . $year;
+		$year = ( '' === $year ) ? '' : ', ' . $year;
 
 		// Determine whether the date is the current date and set the final output.
 		if ( date( self::DATE_FORMAT ) === $the_date && self::USE_TODAY ) {
@@ -159,16 +143,17 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Format the time
+	 *
 	 * @param string $the_time The time to format.
 	 */
 	protected function _format_time( $the_time ) {
 
 		$time_parts = explode( '|', $the_time );
 
-		// Reformat 12:00 and 00:00 to noon and midnight.
+		// Reformat to noon and midnight.
 		if ( '00:00' === $time_parts[0] . ':' . $time_parts[2] ) {
 			return $this->_capitalization( 'noon' );
-		} elseif ( '12:00' === $time_parts[0] . ':' . $time_parts[2] ) {
+		} else if ( '12:00' === $time_parts[0] . ':' . $time_parts[2] ) {
 			return $this->_capitalization( 'midnight' );
 		}
 
@@ -189,6 +174,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Get the date of the post
+	 *
 	 * @param string  $the_date The date of the post.
 	 * @param string  $d The date format.
 	 * @param WP_POST $post The current post.
@@ -210,6 +196,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Get the time of the post
+	 *
 	 * @param string  $the_time The time of the post.
 	 * @param string  $d The time format.
 	 * @param WP_POST $post The current post.
@@ -231,6 +218,7 @@ class AP_Style implements Plugin_Interface
 
 	/**
 	 * Get the modified date of the post
+	 *
 	 * @param string $the_date The date to filter.
 	 * @param string $d The date format.
 	 */

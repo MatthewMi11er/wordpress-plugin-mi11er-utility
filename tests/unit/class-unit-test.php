@@ -1,6 +1,7 @@
 <?php
 /**
  * Basic Tests
+ *
  * @package Mi11er\Utility\Tests
  */
 
@@ -13,8 +14,9 @@ use Mi11er\Utility\Tests as MUT;
  */
 class Unit_Test extends \PHPUnit_Framework_TestCase
 {
-	public function test_that_it_is_testing_time() {
+    public function test_that_it_is_testing_time()
+    {
 
-		$this->assertTrue( true );
-	}
+        $this->assertTrue(true);
+    }
 }

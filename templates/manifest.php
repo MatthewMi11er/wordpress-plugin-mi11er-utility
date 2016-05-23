@@ -9,6 +9,9 @@ namespace Mi11er\Utility;
 
 use Mi11er\Utility\Template_Tags as TT;
 
+/**
+ * The manifest json.
+ */
 $manifest = [
 	'name' => TT::get_the_site_name(),
 	'icons' => [

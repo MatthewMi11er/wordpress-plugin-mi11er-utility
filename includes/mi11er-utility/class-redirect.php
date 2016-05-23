@@ -18,9 +18,10 @@ use Mi11er\Utility\Template_Tags as TT;
  */
 class Redirect implements Plugin_Interface
 {
-	const META_FIELD = '_mu_old_url_redirect';
-	const META_BOX   = 'mu-old-url-redirect';
-	const CACHE_GROUP  = 'mu-old-url-redirect';
+	const META_FIELD  = '_mu_old_url_redirect';
+	const META_BOX    = 'mu-old-url-redirect';
+	const CACHE_GROUP = 'mu-old-url-redirect';
+
 	/**
 	 * Run whatever is needed for plugin setup
 	 */
@@ -47,6 +48,7 @@ class Redirect implements Plugin_Interface
 
 	/**
 	 * Add the OLD URL Meta Box to all post types.
+	 *
 	 * @param string  $post_type Post type.
 	 * @param WP_Post $post      Post object.
 	 */
@@ -94,7 +96,7 @@ class Redirect implements Plugin_Interface
 				"
 				,self::META_FIELD
 				,$request_path
-			)); // Db call ok.
+			)); // WPCS: db call ok.
 
 			if ( $id ) {
 				$link = get_permalink( $id );
