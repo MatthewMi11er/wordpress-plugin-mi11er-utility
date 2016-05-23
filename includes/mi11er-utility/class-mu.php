@@ -97,6 +97,10 @@ final class Mu
 		if ( null === $instance ) {
 			$instance = new Mu();
 
+			$admin_class = __NAMESPACE__ . '\\Admin\\Mu';
+			$instance->admin = new $admin_class;
+			$instance->admin->setup();
+
 			// Do stuff.
 			$instance->setup_plugins();
 
