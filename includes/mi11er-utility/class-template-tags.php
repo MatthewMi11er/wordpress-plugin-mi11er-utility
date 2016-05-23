@@ -22,7 +22,7 @@ class Template_Tags
 	/**
 	 * Call a Tag
 	 *
-	 * @throws BadFunctionCallException If the tag wasn't defined.
+	 * @throws \BadFunctionCallException If the tag wasn't defined.
 	 *
 	 * @param string $tag The name of the tag to call.
 	 * @param array  $arguments The arguments passed to the tag.
@@ -31,7 +31,7 @@ class Template_Tags
 	 */
 	public static function __callStatic( $tag, $arguments ) {
 		if ( ! array_key_exists( $tag, self::$_tags ) ) {
-			throw new BadFunctionCallException( $tag . ' not defined' );
+			throw new \BadFunctionCallException( $tag . ' not defined' );
 		}
 
 		return call_user_func_array( self::$_tags[ $tag ], $arguments );

@@ -7,8 +7,6 @@
 
 namespace Mi11er\Utility;
 
-use Mi11er\Utility\Template_Tags as TT;
-
 /**
  * This class provides functions for routing requests that aren't standard posts or
  * custom post types (eg. theme php css handler.)
