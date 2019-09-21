@@ -19,3 +19,4 @@ phpspec.yml export-ignore
 phpunit.xml export-ignore
 README.md export-ignore
 VERSION export-ignore
+Makefile export-ignore
