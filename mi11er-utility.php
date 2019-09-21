@@ -6,7 +6,7 @@
  * Text Domain: mi11er-utility
  * Author:
  * Author URI:
- * Version: 0.1.5
+ * Version: 0.2.0
  * License:
  * License URI:
  *
@@ -23,8 +23,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * If an autoloader isn't already setup, we need to do it.
  */
-if ( ! class_exists( 'Mi11er\Utility\Mu' ) && is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) ) {
-	require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+if ( ! class_exists( 'Mi11er\Utility\Mu' ) ) {
+	if ( is_file( __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php' ) ) {
+		require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+	}
+	require_once __DIR__ . 'include/mi11er-utility/class-autoload.php';
 }
 
 /**
